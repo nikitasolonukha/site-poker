@@ -9,7 +9,8 @@ describe("PokerChip", () => {
 
     const chip = screen.getByRole("img", { name: "Фишка 25K" });
     expect(chip).toHaveAttribute("data-tone", "pink");
-    expect(screen.getByText("25K")).toBeVisible();
+    expect(chip).toHaveAttribute("data-asset", "/poker-kit/chip-25k.png");
+    expect(chip.querySelector("img")?.getAttribute("src")).toContain("chip-25k.png");
   });
 
   it("can be hidden from assistive technology when decorative", () => {
@@ -27,7 +28,6 @@ describe("ChipDivider", () => {
         value="5K"
         tone="violet"
         direction="reverse"
-        label="MAGNUM"
       />,
     );
 
@@ -39,8 +39,12 @@ describe("ChipDivider", () => {
       "data-direction",
       "reverse",
     );
-    expect(screen.getAllByText("5K").length).toBeGreaterThan(2);
-    expect(screen.getAllByText("MAGNUM").length).toBeGreaterThan(2);
-    expect(screen.getByTestId("poker-chip")).toHaveAttribute("data-tone", "violet");
+    screen.getAllByTestId("chip-divider-segment").forEach((segment) => {
+      expect(segment).toHaveAttribute("data-asset", "/poker-kit/rail-5k.svg");
+    });
+    expect(screen.getByTestId("poker-chip")).toHaveAttribute(
+      "data-asset",
+      "/poker-kit/chip-5k.png",
+    );
   });
 });

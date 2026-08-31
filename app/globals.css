@@ -42,3 +42,117 @@ body {
   background: var(--color-paper);
   color: var(--color-black);
 }
+
+.poker-chip {
+  --poker-chip-size: 100%;
+  position: relative;
+  display: block;
+  width: var(--poker-chip-size);
+  height: var(--poker-chip-size);
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 50%;
+  isolation: isolate;
+}
+
+.poker-chip__image {
+  object-fit: cover;
+  transform: scale(1.515);
+  transform-origin: center;
+  user-select: none;
+}
+
+.chip-divider {
+  --chip-divider-angle: -2deg;
+  position: relative;
+  z-index: 35;
+  height: clamp(118px, 13vw, 188px);
+  margin-block: clamp(-34px, -2.4vw, -18px);
+  overflow: hidden;
+  pointer-events: none;
+  isolation: isolate;
+}
+
+.chip-divider::before {
+  content: "";
+  position: absolute;
+  inset: 50% -8vw auto;
+  height: clamp(46px, 4vw, 62px);
+  transform: translateY(-50%) rotate(var(--chip-divider-angle));
+  background: rgba(8, 9, 11, 0.38);
+  filter: blur(18px);
+  opacity: 0.45;
+}
+
+.chip-divider__rail {
+  position: absolute;
+  top: 50%;
+  left: -10vw;
+  width: 120vw;
+  overflow: hidden;
+  transform: translateY(-50%) rotate(var(--chip-divider-angle));
+  transform-origin: center;
+  filter: drop-shadow(0 12px 20px rgba(0, 0, 0, 0.24));
+}
+
+.chip-divider__track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: magnum-rail-slide 24s linear infinite;
+}
+
+.chip-divider__track[data-direction="reverse"] {
+  animation-direction: reverse;
+}
+
+.chip-divider__segment {
+  position: relative;
+  display: block;
+  flex: 0 0 auto;
+  width: max(1180px, 145vw);
+  aspect-ratio: 2107 / 55;
+}
+
+.chip-divider__rail-image {
+  object-fit: fill;
+  user-select: none;
+}
+
+.chip-divider__chip {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  width: clamp(92px, 11vw, 158px);
+  height: clamp(92px, 11vw, 158px);
+  transform: translateY(-50%);
+  filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.42));
+}
+
+.chip-divider__chip .poker-chip {
+  animation: magnum-chip-spin 18s linear infinite;
+}
+
+.chip-divider__chip--left { left: clamp(14px, 5vw, 76px); }
+.chip-divider__chip--right { right: clamp(14px, 5vw, 76px); }
+
+@keyframes magnum-rail-slide {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+@keyframes magnum-chip-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chip-divider__track,
+  .chip-divider__chip .poker-chip { animation: none; }
+  .chip-divider__track { transform: translate3d(-12.5%, 0, 0); }
+}
+
+@media (max-width: 640px) {
+  .chip-divider { height: 112px; margin-block: -22px; }
+  .chip-divider__rail { left: -22vw; width: 144vw; }
+}
