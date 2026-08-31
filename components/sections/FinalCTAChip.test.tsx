@@ -17,6 +17,9 @@ describe("Final CTA chip motion", () => {
     expect(source).toContain('id: "chip-4"');
     expect(source).toContain('src="/chips/magnum-chip-cta.webp"');
     expect(source).toContain("clipPath: preset.clipPath");
+    expect(source.indexOf("parallaxRefs.current[index] = element")).toBeLessThan(
+      source.indexOf("clipPath: preset.clipPath"),
+    );
     expect(source).toContain("duration: 8.8");
     expect(source).toContain("duration: 7.6");
     expect(source).toContain("duration: 7");
