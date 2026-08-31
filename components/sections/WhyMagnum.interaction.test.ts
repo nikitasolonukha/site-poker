@@ -14,4 +14,11 @@ describe("Why Magnum stacked scroll", () => {
     expect(why).toContain("trigger: markers[index]");
     expect(why).toContain('ScrollTrigger.addEventListener("refreshInit", syncMarkers)');
   });
+  it("delays the third card until the parking card has settled", () => {
+    const why = source();
+
+    expect(why).toContain("THIRD_CARD_ENTRY_DELAY");
+    expect(why).toContain("index === cards.length - 1");
+    expect(why).toContain("window.innerHeight * THIRD_CARD_ENTRY_DELAY");
+  });
 });
