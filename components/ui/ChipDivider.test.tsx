@@ -22,6 +22,15 @@ describe("PokerChip", () => {
 });
 
 describe("ChipDivider", () => {
+  it("renders as a subtle straight divider on the selected surface", () => {
+    render(<ChipDivider value="25K" surface="wine" />);
+
+    const divider = screen.getByTestId("chip-divider");
+    expect(divider).toHaveAttribute("data-alignment", "straight");
+    expect(divider).toHaveAttribute("data-emphasis", "subtle");
+    expect(divider).toHaveAttribute("data-surface", "wine");
+  });
+
   it("renders a doubled ticker, a chip, and the requested direction", () => {
     render(
       <ChipDivider
