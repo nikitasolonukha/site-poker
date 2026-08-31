@@ -15,6 +15,8 @@ const stackedStates = [
   { y: -14, scale: 0.978, rotation: 0.45, opacity: 0.86 },
 ];
 
+const THIRD_CARD_ENTRY_DELAY = 0.18;
+
 export default function WhyMagnum() {
   const containerRef = useRef<HTMLElement>(null);
   const stackRef = useRef<HTMLDivElement>(null);
@@ -42,7 +44,11 @@ export default function WhyMagnum() {
             const marker = markers[index];
             if (!marker) return;
 
-            marker.style.top = `${card.offsetTop}px`;
+            const entryDelay =
+              index === cards.length - 1
+                ? window.innerHeight * THIRD_CARD_ENTRY_DELAY
+                : 0;
+            marker.style.top = `${card.offsetTop + entryDelay}px`;
           });
         };
 
