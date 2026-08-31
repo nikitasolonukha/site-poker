@@ -10,7 +10,7 @@ describe("Why Magnum stacked scroll", () => {
     const why = source();
 
     expect(why).toContain("data-why-scroll-marker");
-    expect(why).toContain("marker.style.top = `${card.offsetTop}px`");
+    expect(why).toContain("card.offsetTop + entryDelay");
     expect(why).toContain("trigger: markers[index]");
     expect(why).toContain('ScrollTrigger.addEventListener("refreshInit", syncMarkers)');
   });
