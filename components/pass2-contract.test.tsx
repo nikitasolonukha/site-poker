@@ -137,6 +137,7 @@ describe("PASS 2 visual system contract", () => {
     expect(why).toContain("bg-[#11090B]");
     expect(why).toContain("bg-[#18090D]");
     expect(why).toContain("bg-[#21070F]");
+    expect(why).toContain("relative overflow-x-clip pb-16 md:pb-[26vh]");
     expect(why).toContain("md:sticky");
     expect(why).toContain("md:top-[13vh]");
     expect(why).toContain("md:w-[82vw]");
