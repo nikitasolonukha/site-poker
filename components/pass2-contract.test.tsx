@@ -109,6 +109,21 @@ describe("PASS 2 visual system contract", () => {
     expect(why).toContain("src={feature.media}");
   });
 
+
+  it("uses the dark MAGNUM sticky material system for Why Magnum", () => {
+    const why = projectFile("components/sections/WhyMagnum.tsx");
+
+    expect(why).not.toContain("magnum-paper");
+    expect(why).toContain("#08090B");
+    expect(why).toContain("#21060C");
+    expect(why).toContain("#F1EFE9");
+    expect(why).toContain("#B22554");
+    expect(why).toContain("bg-[#11090B]");
+    expect(why).toContain("bg-[#18090D]");
+    expect(why).toContain("bg-[#21070F]");
+    expect(why).toContain("opacity-80");
+    expect(why).toContain("scrub: 0.6");
+  });
   it("renders Formats as click-selected 3D playing cards without auto switch", () => {
     const formats = projectFile("components/sections/GameFormats.tsx");
 
