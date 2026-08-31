@@ -186,63 +186,71 @@ describe("PASS 2 visual system contract", () => {
     expect(gallery.every((item) => item.caption.includes("/ 08"))).toBe(true);
   });
 
-  it("publishes exactly the three verified Yandex Maps reviews", () => {
+  it("publishes exactly the three verified Yandex Maps review excerpts", () => {
     expect(reviews).toHaveLength(3);
     expect(reviews).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           id: "yandex-1",
           author: "Дима Ярец",
-          quote: "Лучший клуб покера из всех, где я был",
+          quote: "«Лучший клуб покера из всех, где я был»",
+          body:
+            "«Играю в этом клубе далеко не первый раз и всегда с огромным удовольствием. Всегда радует качество и скорость обслуживания.»",
           source: "Яндекс Карты",
           sourceUrl: "https://yandex.ru/maps/-/CTTRFVMQ",
         }),
         expect.objectContaining({
           id: "yandex-2",
           author: "Алёна Бикеева",
-          quote: "Очень тёплое и уютное место",
+          quote: "«Очень тёплое и уютное место»",
+          body:
+            "«Приходишь — и сразу чувствуешь атмосферу: спокойная игра, приятные люди, всё по-домашнему.»",
         }),
         expect.objectContaining({
           id: "yandex-3",
           author: "1TLM",
-          quote: "Персонал на высшем уровне",
+          quote: "«Персонал на высшем уровне»",
+          body: "«Очень советую посетить это место, очень уютная атмосфера.»",
         }),
       ]),
     );
   });
 
-  it("renders the current verified review with a real Yandex source link", async () => {
+  it("renders all currently verified reviews as scannable cards with real sources", async () => {
     const modulePath = "./sections/Reviews";
     const { default: Reviews } = await import(/* @vite-ignore */ modulePath);
     render(<Reviews />);
 
     expect(screen.getByRole("heading", { name: "ОТЗЫВЫ" })).toBeInTheDocument();
-    expect(screen.getByText("Лучший клуб покера из всех, где я был")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Яндекс Карты/i })).toHaveAttribute(
-      "href",
-      "https://yandex.ru/maps/-/CTTRFVMQ",
-    );
-    expect(screen.getByRole("button", { name: "Показать отзыв Дима Ярец" })).toHaveAttribute(
-      "aria-current",
-      "true",
-    );
+    expect(screen.getByText("4.7 ★")).toBeInTheDocument();
+    expect(screen.getByText("27 ОЦЕНОК")).toBeInTheDocument();
+    expect(screen.getByText("17 ОТЗЫВОВ")).toBeInTheDocument();
+    expect(screen.getAllByRole("article")).toHaveLength(3);
+    expect(screen.getByText("«Лучший клуб покера из всех, где я был»")).toBeInTheDocument();
+    expect(screen.getByText("АЛЁНА БИКЕЕВА")).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: /Яндекс Карты/i })).toHaveLength(4);
+    expect(screen.getByRole("button", { name: "Показать предыдущие отзывы" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Показать следующие отзывы" })).toBeInTheDocument();
   });
-  it("places an accessible editorial reviews section between Gallery and Location", () => {
+
+  it("uses an accessible responsive review track between Gallery and Location", () => {
     const page = projectFile("app/page.tsx");
     const reviewsSection = projectFile("components/sections/Reviews.tsx");
 
     expect(page.indexOf("<Gallery />")).toBeLessThan(page.indexOf("<Reviews />"));
     expect(page.indexOf("<Reviews />")).toBeLessThan(page.indexOf("<Location />"));
-    expect(reviewsSection).toContain("4.7");
-    expect(reviewsSection).toContain("17 ОТЗЫВОВ");
-    expect(reviewsSection).toContain("Показать отзыв ${review.author}");
-    expect(reviewsSection).toContain('aria-current={activeIndex === index ? "true" : undefined}');
-    expect(reviewsSection).toContain('"/poker-kit/chip-100.png"');
-    expect(reviewsSection).toContain('"/poker-kit/chip-500.png"');
-    expect(reviewsSection).toContain('"/poker-kit/chip-1k.png"');
-    expect(reviewsSection).toContain('duration: 0.22');
-    expect(reviewsSection).toContain('duration: 0.38');
-    expect(reviewsSection).toContain('ease: "power3.out"');
+    expect(reviewsSection).toContain("rgba(125,11,41,.13)");
+    expect(reviewsSection).toContain("27 ОЦЕНОК");
+    expect(reviewsSection).toContain("grid-flow-col");
+    expect(reviewsSection).toContain("auto-cols-[86vw]");
+    expect(reviewsSection).toContain("md:auto-cols-[calc((100%-18px)/2)]");
+    expect(reviewsSection).toContain("lg:auto-cols-[calc((100%-48px)/3)]");
+    expect(reviewsSection).toContain("snap-x snap-mandatory");
+    expect(reviewsSection).toContain("scrollBy");
+    expect(reviewsSection).toContain("duration: 0.45");
+    expect(reviewsSection).toContain("stagger: 0.07");
+    expect(reviewsSection).not.toContain("reviewChips");
+    expect(reviewsSection).not.toContain("aria-current={activeIndex");
   });
   it("places the supplied card-group illustration beside the final CTA", () => {
     const finalCta = projectFile("components/sections/FinalCTA.tsx");
