@@ -252,7 +252,7 @@ describe("PASS 2 visual system contract", () => {
     expect(reviewsSection).toContain("onPointerUp");
     expect(reviewsSection).toContain("ArrowRight");
     expect(reviewsSection).toContain("power3.inOut");
-    expect(reviewsSection).toContain("duration: 0.72");
+    expect(reviewsSection).toContain("duration: prefersReducedMotion() ? 0 : 0.72");
     expect(reviewsSection).toContain("magnum-chip.svg");
     expect(reviewsSection).not.toContain("reviewChips");
     expect(reviewsSection).not.toContain("data-review-card");
