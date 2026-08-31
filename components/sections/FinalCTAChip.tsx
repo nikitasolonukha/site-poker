@@ -172,11 +172,7 @@ export default function FinalCTAChip() {
       className="relative h-full w-full [perspective:900px]"
     >
       {chipPresets.map((preset, index) => (
-        <div
-          key={preset.id}
-          className="absolute inset-0"
-          style={{ clipPath: preset.clipPath }}
-        >
+        <div key={preset.id} className="absolute inset-0">
           <div
             ref={(element) => {
               parallaxRefs.current[index] = element;
@@ -188,7 +184,8 @@ export default function FinalCTAChip() {
               ref={(element) => {
                 idleRefs.current[index] = element;
               }}
-              className="relative h-full w-full will-change-transform [transform-style:preserve-3d]"
+              style={{ clipPath: preset.clipPath }}
+              className="absolute inset-0 will-change-transform [transform-style:preserve-3d]"
             >
               <Image
                 src="/chips/magnum-chip-cta.webp"
