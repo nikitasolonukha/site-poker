@@ -89,7 +89,7 @@ export default function Reviews() {
       typeof window === "undefined" ||
       typeof window.matchMedia !== "function" ||
       window.matchMedia("(min-width: 768px)").matches;
-    const step = isDesktop ? 112 : 93;
+    const step = isDesktop ? 109 : 103;
 
     reviews.forEach((review, index) => {
       const slide = slideRefs.current.get(review.id);
