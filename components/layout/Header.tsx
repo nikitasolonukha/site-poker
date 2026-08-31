@@ -17,7 +17,7 @@ export default function Header() {
   return (
     <header
       className={`fixed top-0 left-0 w-full z-50 transition-colors duration-300 ${
-        scrolled ? "bg-[#08090B]/90 backdrop-blur-md" : "bg-transparent"
+        scrolled ? "bg-[rgba(8,9,11,.88)] backdrop-blur-md" : "bg-transparent"
       }`}
     >
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12">
@@ -39,7 +39,7 @@ export default function Header() {
               href={siteConfig.bookingUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-8 py-3 border-b-2 border-[rgba(241,239,233,0.3)] hover:border-warm-white text-sm font-bold text-warm-white transition-all duration-300 tracking-widest uppercase"
+              className="inline-flex min-h-11 items-center justify-center px-4 sm:px-8 py-3 border-b-2 border-[rgba(241,239,233,0.3)] hover:border-warm-white text-xs sm:text-sm font-bold text-warm-white transition-colors duration-300 tracking-widest uppercase"
             >
               Забронировать ↗
             </a>

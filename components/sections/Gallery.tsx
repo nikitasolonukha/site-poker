@@ -1,168 +1,168 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Image from "next/image";
 import { gallery } from "@/data/gallery";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const deckX = [0, -10, 14, -18, 20, -5, 11, -14];
+const deckY = [0, 7, -5, 10, -8, 3, -11, 6];
+const deckRotation = [-5, 3, -2, 6, -4, 2, -3, 4];
+const deckScale = [0.88, 0.84, 0.86, 0.82, 0.87, 0.85, 0.83, 0.88];
+const scatterX = [-180, -90, 40, 150, -140, 95, -35, 175];
+const scatterY = [-90, 70, -120, 25, 115, -55, 90, -105];
+
 export default function Gallery() {
-  const containerRef = useRef<HTMLElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const imagesRef = useRef<(HTMLDivElement | null)[]>([]);
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [isMobile, setIsMobile] = useState(true);
+  const loadedImagesRef = useRef(0);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    if (window.innerWidth < 768 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      return () => window.removeEventListener('resize', checkMobile);
-    }
-
+    const mm = gsap.matchMedia();
     const ctx = gsap.context(() => {
-      if (!gridRef.current) return;
+      mm.add(
+        "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
+        () => {
+          const items = imagesRef.current.filter(Boolean) as HTMLDivElement[];
+          if (!gridRef.current || items.length === 0) return;
 
-      const items = imagesRef.current.filter(Boolean) as HTMLDivElement[];
-      
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
+          const deckPosition = (item: HTMLDivElement, index: number) => {
+            const rect = item.getBoundingClientRect();
+            const targetX = window.innerWidth - window.innerWidth * 0.08 - rect.width / 2;
+            const targetY = window.innerHeight - window.innerHeight * 0.08 - rect.height / 2;
+            return {
+              x: targetX - (rect.left + rect.width / 2) + deckX[index],
+              y: targetY - (rect.top + rect.height / 2) + deckY[index],
+            };
+          };
 
-      const initialRotations = [-4, 2, -1, 4, -3, 1, -2, 3, -1];
+          items.forEach((item, index) => {
+            const position = deckPosition(item, index);
+            gsap.set(item, {
+              x: position.x,
+              y: position.y,
+              rotation: deckRotation[index],
+              scale: deckScale[index],
+              opacity: 0.88,
+              zIndex: gallery.length - index,
+              transformOrigin: "center",
+            });
+          });
 
-      // Initially set all items to be hidden via opacity to prevent FOUC (flash of unstyled content)
-      gsap.set(items, { opacity: 0 });
+          const timeline = gsap.timeline({
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top top",
+              end: "bottom bottom",
+              scrub: 0.75,
+              invalidateOnRefresh: true,
+            },
+          });
 
-      items.forEach((item, i) => {
-        const rect = item.getBoundingClientRect();
-        const itemCenterX = rect.left + rect.width / 2;
-        const itemCenterY = rect.top + rect.height / 2;
-        
-        const deltaX = centerX - itemCenterX;
-        const deltaY = centerY - itemCenterY;
-        
-        const rot = initialRotations[i % initialRotations.length];
+          items.forEach((item, index) => {
+            const position = deckPosition(item, index);
+            timeline
+              .to(
+                item,
+                {
+                  x: position.x * 0.42 + scatterX[index],
+                  y: position.y * 0.38 + scatterY[index],
+                  rotation: deckRotation[index] * 0.45,
+                  scale: 0.92,
+                  opacity: 0.94,
+                  ease: "power1.inOut",
+                  duration: 0.4,
+                },
+                0,
+              )
+              .to(
+                item,
+                {
+                  x: 0,
+                  y: 0,
+                  rotation: 0,
+                  scale: 1,
+                  opacity: 1,
+                  zIndex: 1,
+                  ease: "power2.inOut",
+                  duration: 0.6,
+                },
+                0.4,
+              );
+          });
 
-        // Prepare the scattered state immediately, and make them visible
-        gsap.set(item, {
-          x: deltaX,
-          y: deltaY,
-          rotation: rot,
-          scale: 0.88,
-          zIndex: 10 - i,
-          opacity: 1, // now it's safe to show them in their scattered position
-        });
-      });
+          return () => timeline.kill();
+        },
+      );
+    }, sectionRef);
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: "+=120%",
-          scrub: 1,
-          pin: true,
-          pinSpacing: true,
-        }
-      });
-
-      // Scatter outward a bit as you start scrolling
-      items.forEach((item) => {
-        tl.to(item, {
-          x: (gsap.getProperty(item, "x") as number) * 0.5,
-          y: (gsap.getProperty(item, "y") as number) * 0.5,
-          rotation: (gsap.getProperty(item, "rotation") as number) * 0.5,
-          ease: "power1.inOut"
-        }, 0);
-      });
-
-      // Snap to original grid positions
-      items.forEach((item) => {
-        tl.to(item, {
-          x: 0,
-          y: 0,
-          rotation: 0,
-          scale: 1,
-          zIndex: 1,
-          ease: "power2.out"
-        }, 0.4);
-      });
-
-    }, containerRef);
-
-    return () => ctx.revert();
+    return () => {
+      mm.revert();
+      ctx.revert();
+    };
   }, []);
 
+  const handleImageLoad = () => {
+    loadedImagesRef.current += 1;
+    if (loadedImagesRef.current >= gallery.length) {
+      requestAnimationFrame(() => ScrollTrigger.refresh());
+    }
+  };
+
   return (
-    <section id="gallery" ref={containerRef} className="bg-[#08090B] relative pt-20 overflow-hidden min-h-[100svh] text-warm-white flex items-center">
-      <div className="absolute top-24 left-0 right-0 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 z-10 pointer-events-none flex justify-between items-end">
-        <h2 className="font-display text-3xl md:text-5xl lg:text-7xl font-bold uppercase tracking-tight">
-          Галерея
-        </h2>
-        <span className="text-muted text-sm md:text-base tracking-widest uppercase font-bold">
-          09 ФОТО
-        </span>
-      </div>
+    <section
+      id="gallery"
+      ref={sectionRef}
+      className="relative bg-[#08090B] text-warm-white md:h-[220svh]"
+    >
+      <div className="gallery-sticky relative min-h-[100svh] overflow-hidden md:sticky md:top-0 md:h-[100svh]">
+        <div className="relative z-20 mx-auto flex w-full max-w-[1440px] items-end justify-between px-4 pt-24 sm:px-6 lg:px-12 md:absolute md:left-1/2 md:top-0 md:-translate-x-1/2">
+          <h2 className="font-display text-4xl md:text-5xl lg:text-7xl font-bold uppercase tracking-tight">
+            Галерея
+          </h2>
+          <span className="text-muted text-sm md:text-base tracking-widest uppercase font-bold tabular-nums">
+            08 ФОТО
+          </span>
+        </div>
 
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 w-full pt-[80px]">
-        <div 
-          ref={gridRef}
-          className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 auto-rows-[300px] md:auto-rows-[minmax(150px,22vh)]"
-        >
-          {gallery.map((item, i) => {
-            let colSpan = "md:col-span-4";
-            let rowSpan = "md:row-span-1";
-            
-            if (i === 0) { colSpan = "md:col-span-7"; rowSpan = "md:row-span-2"; }
-            else if (i === 1) { colSpan = "md:col-span-5"; rowSpan = "md:row-span-3"; }
-            else if (i === 2) { colSpan = "md:col-span-4"; rowSpan = "md:row-span-1"; }
-            else if (i === 3) { colSpan = "md:col-span-3"; rowSpan = "md:row-span-2"; }
-            else if (i === 4) { colSpan = "md:col-span-5"; rowSpan = "md:row-span-2"; }
-            else if (i === 5) { colSpan = "md:col-span-4"; rowSpan = "md:row-span-2"; }
-            else if (i === 6) { colSpan = "md:col-span-3"; rowSpan = "md:row-span-1"; }
-            else if (i === 7) { colSpan = "md:col-span-8"; rowSpan = "md:row-span-2"; }
-            else if (i === 8) { colSpan = "md:col-span-4"; rowSpan = "md:row-span-2"; }
-
-            return (
-              <div 
+        <div className="relative mx-auto w-full max-w-[1440px] px-4 pb-16 pt-12 sm:px-6 lg:px-12 md:absolute md:inset-x-0 md:bottom-8 md:top-[180px] md:p-0 md:px-12">
+          <div
+            ref={gridRef}
+            className="grid grid-cols-1 gap-4 md:h-full md:grid-cols-4 md:grid-rows-2 md:gap-5"
+          >
+            {gallery.map((item, index) => (
+              <div
                 key={item.id}
-                ref={(el) => { imagesRef.current[i] = el; }}
-                // Added opacity-0 initially for desktop so it doesn't flash before GSAP kicks in
-                className={`${colSpan} ${rowSpan} relative group overflow-hidden rounded-[2px] will-change-transform bg-[#14070A] md:opacity-0`}
-                onMouseEnter={() => setHoveredId(item.id)}
-                onMouseLeave={() => setHoveredId(null)}
+                ref={(element) => {
+                  imagesRef.current[index] = element;
+                }}
+                className="group relative min-h-[280px] overflow-hidden rounded-[2px] bg-[#14070A] transform-gpu md:min-h-0"
               >
                 <Image
                   src={item.src}
                   alt={item.alt}
                   fill
-                  quality={92}
-                  priority={i < 4} // Make first few images priority to prevent flash
-                  className="object-cover transition-transform duration-[600ms] ease-out group-hover:scale-[1.03]"
-                  sizes={
-                    colSpan.includes("7") || colSpan.includes("8") ? "(max-width: 768px) 100vw, 70vw" 
-                    : "(max-width: 768px) 100vw, 40vw"
-                  }
+                  quality={90}
+                  priority={index < 4}
+                  onLoad={handleImageLoad}
+                  className="object-cover outline outline-1 -outline-offset-1 outline-white/10 transition-transform duration-500 ease-out group-hover:scale-[1.025]"
+                  sizes="(max-width: 767px) 100vw, 25vw"
                 />
-                
-                {/* Caption overlay */}
-                <div 
-                  className={`absolute inset-0 bg-gradient-to-t from-[rgba(0,0,0,0.7)] to-transparent flex items-end p-6 transition-opacity duration-400 ${
-                    hoveredId === item.id || isMobile ? "opacity-100" : "opacity-0"
-                  }`}
-                >
-                  <p className="text-warm-white font-sans text-[13px] tracking-widest whitespace-pre-line leading-[1.4] uppercase font-bold drop-shadow-md">
+                <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/65 to-transparent p-5 opacity-75 transition-opacity duration-200 md:opacity-60 md:group-hover:opacity-100">
+                  <p className="text-warm-white font-sans text-[12px] tracking-widest whitespace-pre-line leading-[1.4] uppercase font-bold">
                     {item.caption}
                   </p>
                 </div>
               </div>
-            );
-          })}
+            ))}
+          </div>
         </div>
       </div>
     </section>
   );
 }
+

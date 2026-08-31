@@ -10,41 +10,98 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
-  const chipRef = useRef<HTMLDivElement>(null);
+  const chipScrollRef = useRef<HTMLDivElement>(null);
+  const chipInteractiveRef = useRef<HTMLButtonElement>(null);
   const bgSpadeRef = useRef<HTMLDivElement>(null);
+  const chipAnimationRef = useRef<gsap.core.Timeline | null>(null);
+  const chipIsAnimatingRef = useRef(false);
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLButtonElement>) => {
+    if (
+      chipIsAnimatingRef.current ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) return;
+
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+    gsap.to(chipInteractiveRef.current, {
+      rotateY: x * 8,
+      rotateX: -y * 6,
+      x: x * 6,
+      y: y * 6,
+      duration: 0.55,
+      ease: "power3.out",
+      overwrite: "auto",
+    });
+  };
+
+  const handlePointerLeave = () => {
+    if (chipIsAnimatingRef.current) return;
+    gsap.to(chipInteractiveRef.current, {
+      rotateX: 0,
+      rotateY: 0,
+      x: 0,
+      y: 0,
+      duration: 0.55,
+      ease: "power3.out",
+      overwrite: "auto",
+    });
+  };
+
+  const handleChipClick = () => {
+    if (!chipInteractiveRef.current || chipIsAnimatingRef.current) return;
+    chipIsAnimatingRef.current = true;
+
+    const finish = () => {
+      chipIsAnimatingRef.current = false;
+      chipAnimationRef.current = null;
+    };
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    chipAnimationRef.current = gsap.timeline({ onComplete: finish });
+    if (reducedMotion) {
+      chipAnimationRef.current
+        .to(chipInteractiveRef.current, { scale: 1.04, duration: 0.18, ease: "power2.out" })
+        .to(chipInteractiveRef.current, { scale: 1, duration: 0.22, ease: "power2.inOut" });
+      return;
+    }
+
+    chipAnimationRef.current
+      .to(chipInteractiveRef.current, {
+        y: -65,
+        scale: 1.05,
+        rotateZ: 16,
+        rotateY: 180,
+        duration: 0.22,
+        ease: "power2.out",
+      })
+      .to(chipInteractiveRef.current, {
+        y: -78,
+        rotateY: 360,
+        rotateZ: -8,
+        duration: 0.2,
+        ease: "none",
+      })
+      .to(chipInteractiveRef.current, {
+        y: 0,
+        rotateY: 720,
+        rotateZ: 0,
+        scale: 1,
+        duration: 0.48,
+        ease: "bounce.out",
+      });
+  };
 
   useEffect(() => {
-    let ctx = gsap.context(() => {
-      // Mouse move tilt effect for desktop
-      const handleMouseMove = (e: MouseEvent) => {
-        if (!chipRef.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-        
-        const { clientX, clientY } = e;
-        const { innerWidth, innerHeight } = window;
-        
-        const xPos = (clientX / innerWidth - 0.5) * 2;
-        const yPos = (clientY / innerHeight - 0.5) * 2;
-        
-        gsap.to(chipRef.current, {
-          rotateY: xPos * 5,
-          rotateX: -yPos * 3,
-          x: xPos * 8,
-          y: yPos * 8,
-          duration: 0.7,
-          ease: "power3.out",
-        });
-      };
-      
-      window.addEventListener("mousemove", handleMouseMove);
-
-      // Scroll animations
+    const ctx = gsap.context(() => {
       if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        gsap.to(chipRef.current, {
+        gsap.to(chipScrollRef.current, {
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top top",
             end: "bottom top",
-            scrub: true,
+            scrub: 0.7,
           },
           rotateZ: 8,
           x: "3vw",
@@ -62,13 +119,12 @@ export default function Hero() {
           y: 40,
         });
       }
-
-      return () => {
-        window.removeEventListener("mousemove", handleMouseMove);
-      };
     }, sectionRef);
 
-    return () => ctx.revert();
+    return () => {
+      chipAnimationRef.current?.kill();
+      ctx.revert();
+    };
   }, []);
 
   return (
@@ -88,10 +144,10 @@ export default function Hero() {
         />
       </div>
 
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 w-full relative z-10 flex flex-col md:flex-row items-center justify-between pt-[100px] pb-12">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 w-full relative z-10 flex flex-col md:flex-row items-center pt-[100px] pb-12">
         
         {/* Left text */}
-        <div className="w-full md:max-w-[45%] lg:max-w-[40%] flex flex-col items-start justify-center relative z-20">
+        <div className="w-full md:w-[64%] flex flex-col items-start justify-center relative z-20">
           <div className="text-muted tracking-widest uppercase text-xs sm:text-sm font-medium mb-8">
             МОСКВА / СПОРТИВНЫЙ ПОКЕР
           </div>
@@ -132,24 +188,42 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Right Chip */}
-        <div 
-          ref={chipRef} 
-          className="relative md:absolute flex items-center justify-center transform-style-3d z-10 mt-16 md:mt-0 right-auto md:right-[-4vw] lg:right-[-6vw] top-auto md:top-[50%] md:-translate-y-1/2"
-          style={{
-            width: "clamp(280px, 42vw, 680px)",
-            aspectRatio: "1/1",
-            filter: "drop-shadow(0 35px 60px rgba(0,0,0,0.45))",
-          }}
+        {/* Outer scroll wrapper; inner wrapper owns pointer and click transforms. */}
+        <div
+          ref={chipScrollRef}
+          className="relative md:absolute z-10 mt-16 md:mt-0 right-auto md:right-[-2vw] min-[1200px]:right-[2vw] top-auto md:top-[52%] md:-translate-y-1/2 w-[min(82vw,340px)] md:w-[clamp(340px,36vw,480px)] min-[1200px]:w-[clamp(380px,29vw,520px)]"
+          style={{ aspectRatio: "1 / 1", perspective: "900px" }}
         >
-          <Image
-            src="/magnum-chip.svg"
-            alt="Magnum Chip"
-            fill
-            className="object-contain"
-            sizes="(max-width: 768px) 90vw, 50vw"
-            priority
-          />
+          <button
+            ref={chipInteractiveRef}
+            type="button"
+            aria-label="Подбросить фишку MAGNUM"
+            className="hero-chip-interactive relative block w-full h-full cursor-pointer"
+            onClick={handleChipClick}
+            onPointerMove={handlePointerMove}
+            onPointerLeave={handlePointerLeave}
+          >
+            <span className="chip-face chip-face--front">
+              <Image
+                src="/magnum-chip.svg"
+                alt="Magnum Chip"
+                fill
+                className="object-contain"
+                sizes="(max-width: 768px) 82vw, 520px"
+                priority
+              />
+            </span>
+            <span className="chip-face chip-face--back" aria-hidden="true">
+              <Image
+                src="/magnum-chip.svg"
+                alt=""
+                fill
+                className="object-contain"
+                sizes="(max-width: 768px) 82vw, 520px"
+                priority
+              />
+            </span>
+          </button>
         </div>
       </div>
     </section>

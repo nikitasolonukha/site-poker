@@ -10,7 +10,8 @@ import Reviews from "@/components/sections/Reviews";
 import Location from "@/components/sections/Location";
 import FinalCTA from "@/components/sections/FinalCTA";
 import MagnumCTA from "@/components/ui/MagnumCTA";
-import ChipDivider from "@/components/ui/ChipDivider";
+import ChipRail from "@/components/ui/ChipRail";
+import { siteConfig } from "@/config/site";
 
 export default function Home() {
   return (
@@ -18,40 +19,31 @@ export default function Home() {
       <Header />
       <main>
         <Hero />
-        <ChipDivider value="500" surface="wine" chipSide="right" />
+        <ChipRail denomination="500" />
         <About />
-        <ChipDivider value="100" surface="dark" direction="reverse" chipSide="left" />
-        
+
         <MagnumCTA 
           title="ЕСТЬ ВОПРОС?"
-          label="НАПИСАТЬ В TELEGRAM"
-          href="https://t.me/MAGNUM_POKER"
+          label="НАПИСАТЬ В TELEGRAM ↗"
+          href={siteConfig.telegram}
         />
-        <ChipDivider value="1K" surface="wine" chipSide="right" />
-        
+        <ChipRail denomination="100" direction="reverse" chipSide="left" />
+
         <WhyMagnum />
-        <ChipDivider value="5K" surface="paper" direction="reverse" chipSide="left" />
+        <ChipRail denomination="1K" />
         <GameFormats />
-        <ChipDivider value="25K" surface="wine" chipSide="right" />
-        
+
         <MagnumCTA 
           title="ГОТОВЫ СЕСТЬ ЗА СТОЛ?"
-          label="ЗАПИСАТЬСЯ"
-          href="https://t.me/MAGNUM_POKER"
+          label="ЗАПИСАТЬСЯ ↗"
+          href={siteConfig.bookingUrl}
         />
-
+        <ChipRail denomination="5K" direction="reverse" chipSide="left" />
         <Gallery />
-        <ChipDivider value="100K" surface="dark" direction="reverse" chipSide="left" />
+        <ChipRail denomination="25K" />
         <Reviews />
+        <ChipRail denomination="100K" direction="reverse" chipSide="left" />
         <Location />
-        <ChipDivider value="BOUNTY" surface="wine" chipSide="right" />
-        
-        <MagnumCTA 
-          title="ОСТАЛИСЬ СОМНЕНИЯ?"
-          label="СВЯЗАТЬСЯ С НАМИ"
-          href="https://t.me/MAGNUM_POKER"
-        />
-        
         <FinalCTA />
       </main>
       <Footer />
