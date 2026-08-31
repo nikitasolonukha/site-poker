@@ -8,7 +8,6 @@ import { whyFeatures } from "@/data/why";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const rotations = [-1.2, 0.8, -0.6];
 const cardSurfaceClasses = ["bg-[#11090B]", "bg-[#18090D]", "bg-[#21070F]"];
 
 export default function WhyMagnum() {
@@ -23,56 +22,25 @@ export default function WhyMagnum() {
         if (!card) return;
 
         const cardSurface = card.querySelector<HTMLElement>("[data-why-card]");
-        const cardMedia = card.querySelector<HTMLElement>("[data-why-media]");
+        if (!cardSurface) return;
 
-        if (cardSurface) {
-          gsap.fromTo(
-            cardSurface,
-            { autoAlpha: 0, y: 48, scale: 0.975 },
-            {
-              autoAlpha: 1,
-              y: 0,
-              scale: 1,
-              duration: 0.8,
-              ease: "power3.out",
-              scrollTrigger: {
-                trigger: card,
-                start: "top 82%",
-                toggleActions: "play none none reverse",
-              },
-            },
-          );
-        }
-
-        if (cardMedia) {
-          gsap.fromTo(
-            cardMedia,
-            { autoAlpha: 0, scale: 1.06 },
-            {
-              autoAlpha: 1,
-              scale: 1,
-              duration: 0.9,
-              ease: "power3.out",
-              scrollTrigger: {
-                trigger: card,
-                start: "top 78%",
-                toggleActions: "play none none reverse",
-              },
-            },
-          );
-        }
+        gsap.set(card, { zIndex: cardsRef.current.length - index });
+        gsap.set(cardSurface, {
+          transformPerspective: 1400,
+          transformOrigin: "left center",
+          transformStyle: "preserve-3d",
+        });
 
         if (index === cardsRef.current.length - 1) return;
 
-        gsap.to(card, {
-          scale: 0.97,
-          rotateZ: rotations[index],
-          opacity: 0.78,
+        gsap.to(cardSurface, {
+          rotationY: -88,
+          opacity: 0.12,
           ease: "none",
           scrollTrigger: {
             trigger: cardsRef.current[index + 1],
-            start: "top bottom",
-            end: "top 15vh",
+            start: "top 88%",
+            end: "top 18%",
             scrub: 0.6,
             invalidateOnRefresh: true,
           },
@@ -144,7 +112,7 @@ export default function WhyMagnum() {
                 </div>
               </div>
 
-              <div data-why-media className="relative order-1 aspect-[4/3] w-full overflow-hidden rounded-[2px] border border-[rgba(241,239,233,0.07)] bg-[#08090B] md:order-2 md:aspect-auto md:w-[55%]">
+              <div className="relative order-1 aspect-[4/3] w-full overflow-hidden rounded-[2px] border border-[rgba(241,239,233,0.07)] bg-[#08090B] md:order-2 md:aspect-auto md:w-[55%]">
                 {feature.media === null ? (
                   <div
                     className="absolute inset-0 flex flex-col justify-between p-6 md:p-8"
