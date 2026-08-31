@@ -196,6 +196,22 @@ describe("PASS 2 visual system contract", () => {
     );
   });
 
+  it("renders the current verified review with a real Yandex source link", async () => {
+    const modulePath = "./sections/Reviews";
+    const { default: Reviews } = await import(/* @vite-ignore */ modulePath);
+    render(<Reviews />);
+
+    expect(screen.getByRole("heading", { name: "ОТЗЫВЫ" })).toBeInTheDocument();
+    expect(screen.getByText("Лучший клуб покера из всех, где я был")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Яндекс Карты/i })).toHaveAttribute(
+      "href",
+      "https://yandex.ru/maps/-/CTTRFVMQ",
+    );
+    expect(screen.getByRole("button", { name: "Показать отзыв Дима Ярец" })).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
+  });
   it("places an accessible editorial reviews section between Gallery and Location", () => {
     const page = projectFile("app/page.tsx");
     const reviewsSection = projectFile("components/sections/Reviews.tsx");
