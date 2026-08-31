@@ -20,10 +20,11 @@ describe("Final CTA chip motion", () => {
     expect(source.indexOf("parallaxRefs.current[index] = element")).toBeLessThan(
       source.indexOf("clipPath: preset.clipPath"),
     );
-    expect(source).toContain("duration: 8.8");
-    expect(source).toContain("duration: 7.6");
-    expect(source).toContain("duration: 7");
-    expect(source).toContain("duration: 9.8");
+    expect(source).toContain("cycleDuration: 8.8");
+    expect(source).toContain("cycleDuration: 7.6");
+    expect(source).toContain("cycleDuration: 7");
+    expect(source).toContain("cycleDuration: 9.8");
+    expect(source).toContain("duration: preset.cycleDuration / 2");
     expect(source).toContain("parallax: 6");
     expect(source).toContain("parallax: 14");
     expect(source).toContain("requestAnimationFrame");
