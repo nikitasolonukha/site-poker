@@ -1,7 +1,7 @@
+/* eslint-disable @next/next/no-img-element -- direct SVG is the WebGL fallback. */
 "use client";
 
-
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import gsap from "gsap";
 import Image from "next/image";
@@ -12,13 +12,40 @@ gsap.registerPlugin(ScrollTrigger);
 
 const MagnumChip3D = dynamic(
   () => import("@/components/hero/MagnumChip3D"),
-  { ssr: false, loading: () => null },
+  { ssr: false, loading: () => <span aria-hidden className="absolute inset-0" /> },
 );
+
+type ChipSvgFallbackProps = {
+  className?: string;
+};
+
+function ChipSvgFallback({ className = "" }: ChipSvgFallbackProps) {
+  return (
+    <img
+      src="/magnum-chip.svg"
+      alt="Фирменная фишка MAGNUM"
+      className={`h-full w-full object-contain ${className}`}
+    />
+  );
+}
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const chipPositionRef = useRef<HTMLDivElement>(null);
   const bgSpadeRef = useRef<HTMLDivElement>(null);
+  const [chip3DReady, setChip3DReady] = useState(false);
+  const [chip3DError, setChip3DError] = useState(false);
+  const [isChipDebug, setIsChipDebug] = useState(false);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      setIsChipDebug(
+        new URLSearchParams(window.location.search).has("chipDebug"),
+      );
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -52,6 +79,18 @@ export default function Hero() {
     return () => ctx.revert();
   }, []);
 
+  const handleChipReady = () => {
+    setChip3DError(false);
+    setChip3DReady(true);
+  };
+
+  const handleChipError = () => {
+    setChip3DReady(false);
+    setChip3DError(true);
+  };
+
+  const shouldShow3D = chip3DReady && !chip3DError;
+
   return (
     <section ref={sectionRef} className="relative w-full min-h-[100svh] flex flex-col justify-center overflow-hidden magnum-wine">
       <div ref={bgSpadeRef} className="absolute inset-0 z-0 pointer-events-none" style={{ opacity: 0.14 }}>
@@ -77,9 +116,21 @@ export default function Hero() {
         </div>
 
         <div ref={chipPositionRef} className="chip-scene relative md:absolute z-10 mt-16 md:mt-0 w-[min(82vw,340px)] md:w-[clamp(420px,31vw,560px)] md:right-[5vw] md:top-[51%] md:-translate-y-1/2 right-auto" style={{ aspectRatio: "1 / 1", perspective: "900px" }}>
-          <div className="absolute inset-0">
-            <MagnumChip3D />
-          </div>
+          {isChipDebug ? (
+            <div data-chip-debug className="grid h-full w-full grid-cols-2 gap-3">
+              <div className="min-w-0"><ChipSvgFallback /></div>
+              <div className="relative min-w-0">
+                <MagnumChip3D onReady={handleChipReady} onError={handleChipError} />
+              </div>
+            </div>
+          ) : (
+            <>
+              <ChipSvgFallback className={`absolute inset-0 transition-opacity duration-[360ms] ${shouldShow3D ? "opacity-0" : "opacity-100"}`} />
+              <div className={`absolute inset-0 transition-opacity duration-[360ms] ${shouldShow3D ? "opacity-100" : "opacity-0"}`}>
+                <MagnumChip3D onReady={handleChipReady} onError={handleChipError} />
+              </div>
+            </>
+          )}
         </div>
       </div>
     </section>

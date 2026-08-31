@@ -62,6 +62,7 @@ describe("PASS 2 visual system contract", () => {
     expect(existsSync(resolve(process.cwd(), "public/models/magnum-chip.glb"))).toBe(true);
     expect(existsSync(resolve(process.cwd(), "public/textures/magnum-chip-face.webp"))).toBe(true);
     expect(existsSync(resolve(process.cwd(), "scripts/build-magnum-chip.py"))).toBe(true);
+    expect(existsSync(resolve(process.cwd(), "assets/blender/magnum-chip.blend"))).toBe(true);
     expect(existsSync(chipPath)).toBe(true);
     expect(existsSync(creditsPath)).toBe(true);
     if (!existsSync(chipPath) || !existsSync(creditsPath)) return;
@@ -73,7 +74,9 @@ describe("PASS 2 visual system contract", () => {
     expect(chip).toContain('useGLTF("/models/magnum-chip.glb")');
     expect(chip).toContain("ContactShadows");
     expect(chip).not.toContain("useTexture");
-    expect(chip).toContain("dpr={[1, 1.5]}");
+    expect(chip).toContain("const maxDpr");
+    expect(chip).toContain("? 1.25 : 1.5");
+    expect(chip).toContain("dpr={[1, maxDpr]}");
     expect(chip).toContain('frameloop="demand"');
     expect(chip).toContain("new THREE.Box3()");
     expect(chip).toContain("getCenter");
@@ -84,6 +87,9 @@ describe("PASS 2 visual system contract", () => {
     expect(chip).toContain("object.castShadow = true");
     expect(chip).not.toContain("object.material = new THREE.MeshStandardMaterial");
     expect(chip).toContain("hasPaintedRef");
+    expect(chip).toContain("FLIP_DURATION = 1.2");
+    expect(chip).toContain("Math.PI * 2 * eased");
+    expect(chip).not.toContain("Math.PI * 2.6");
     expect(chip).toContain("<Suspense fallback={null}>");
     expect(chip).toContain("onCreated");
     expect(hero).toContain("MagnumChip3D");

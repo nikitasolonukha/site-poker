@@ -13,7 +13,7 @@ const cardSurfaceClasses = ["bg-[#11090B]", "bg-[#18090D]", "bg-[#21070F]"];
 
 export default function WhyMagnum() {
   const containerRef = useRef<HTMLElement>(null);
-  const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const cardsRef = useRef<(HTMLElement | null)[]>([]);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
