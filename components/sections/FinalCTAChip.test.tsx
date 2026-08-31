@@ -21,6 +21,8 @@ describe("Final CTA chip motion", () => {
     expect(source).toContain("preset.left");
     expect(source).toContain("preset.top");
     expect(source).toContain("preset.width");
+    expect(source).toContain('top: "82%"');
+    expect(source).toContain('width: "58%"');
     expect(source).not.toContain("clipPath");
     expect(source).toContain("cycleDuration: 8.8");
     expect(source).toContain("cycleDuration: 7.6");
