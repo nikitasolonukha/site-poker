@@ -6,7 +6,11 @@ import gsap from "gsap";
 
 type ChipPreset = {
   id: string;
-  clipPath: string;
+  src: string;
+  left: string;
+  top: string;
+  width: string;
+  baseRotation: number;
   idleX: number;
   idleY: number;
   rotateZ: number;
@@ -21,9 +25,13 @@ type ChipPreset = {
 const chipPresets: ChipPreset[] = [
   {
     id: "chip-1",
-    clipPath: "polygon(29% 3%, 72% 3%, 72% 35%, 29% 35%)",
+    src: "/chips/magnum-chip-cta-tight.webp",
+    left: "33%",
+    top: "3%",
+    width: "56%",
+    baseRotation: 0,
     idleX: 4,
-    idleY: -6,
+    idleY: -7,
     rotateZ: 1.5,
     rotateX: 1,
     rotateY: -1.3,
@@ -34,7 +42,11 @@ const chipPresets: ChipPreset[] = [
   },
   {
     id: "chip-2",
-    clipPath: "polygon(43% 26%, 74% 26%, 74% 58%, 43% 58%)",
+    src: "/chips/magnum-chip-cta-tight.webp",
+    left: "57%",
+    top: "28%",
+    width: "38%",
+    baseRotation: 84,
     idleX: -6,
     idleY: 10,
     rotateZ: -2.4,
@@ -47,7 +59,11 @@ const chipPresets: ChipPreset[] = [
   },
   {
     id: "chip-3",
-    clipPath: "polygon(27% 53%, 62% 53%, 62% 80%, 27% 80%)",
+    src: "/chips/magnum-chip-cta-tight.webp",
+    left: "34%",
+    top: "55%",
+    width: "43%",
+    baseRotation: 176,
     idleX: 8,
     idleY: -12,
     rotateZ: 2.8,
@@ -60,9 +76,13 @@ const chipPresets: ChipPreset[] = [
   },
   {
     id: "chip-4",
-    clipPath: "polygon(8% 76%, 54% 76%, 54% 100%, 8% 100%)",
+    src: "/chips/magnum-chip-cta-tight.webp",
+    left: "7%",
+    top: "77%",
+    width: "68%",
+    baseRotation: 0,
     idleX: -5,
-    idleY: 5,
+    idleY: 6,
     rotateZ: -1.3,
     rotateX: -1,
     rotateY: 1.2,
@@ -167,33 +187,36 @@ export default function FinalCTAChip() {
   }, []);
 
   return (
-    <div
-      aria-hidden="true"
-      className="relative h-full w-full [perspective:900px]"
-    >
+    <div aria-hidden="true" className="relative h-full w-full [perspective:900px]">
       {chipPresets.map((preset, index) => (
-        <div key={preset.id} className="absolute inset-0">
+        <div
+          key={preset.id}
+          className="absolute will-change-transform"
+          style={{ left: preset.left, top: preset.top, width: preset.width }}
+        >
           <div
             ref={(element) => {
               parallaxRefs.current[index] = element;
             }}
             data-chip-id={preset.id}
-            className="absolute inset-0 will-change-transform"
+            className="will-change-transform"
           >
             <div
               ref={(element) => {
                 idleRefs.current[index] = element;
               }}
-              style={{ clipPath: preset.clipPath }}
-              className="absolute inset-0 will-change-transform [transform-style:preserve-3d]"
+              className="will-change-transform [transform-style:preserve-3d]"
             >
-              <Image
-                src="/chips/magnum-chip-cta.webp"
-                alt=""
-                fill
-                className="object-contain"
-                sizes="(max-width: 768px) 80vw, 600px"
-              />
+              <div style={{ transform: `rotate(${preset.baseRotation}deg)` }}>
+                <Image
+                  src={preset.src}
+                  alt=""
+                  width={700}
+                  height={500}
+                  className="h-auto w-full object-contain drop-shadow-[0_24px_34px_rgba(0,0,0,0.28)]"
+                  sizes="(max-width: 768px) 68vw, 410px"
+                />
+              </div>
             </div>
           </div>
         </div>

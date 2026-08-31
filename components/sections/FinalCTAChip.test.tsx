@@ -15,7 +15,6 @@ describe("Final CTA chip motion", () => {
     expect(source).toContain('id: "chip-2"');
     expect(source).toContain('id: "chip-3"');
     expect(source).toContain('id: "chip-4"');
-    expect(source).toContain('src="/chips/magnum-chip-cta-tight.webp"');
     expect(existsSync(resolve(process.cwd(), "public/chips/magnum-chip-cta-tight.webp"))).toBe(true);
     expect(source).toContain('src: "/chips/magnum-chip-cta-tight.webp"');
     expect(source).toContain("baseRotation");
