@@ -251,21 +251,3 @@ section[id] {
   }
 }
 
-.final-cta-chip {
-  animation: final-chip-float 5.5s ease-in-out infinite alternate;
-}
-
-@keyframes final-chip-float {
-  from {
-    margin-bottom: 0;
-  }
-  to {
-    margin-bottom: 7px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .final-cta-chip {
-    animation: none;
-  }
-}
