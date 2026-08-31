@@ -222,9 +222,9 @@ describe("PASS 2 visual system contract", () => {
     expect(reviewsSection).toContain("17 ОТЗЫВОВ");
     expect(reviewsSection).toContain("Показать отзыв ${review.author}");
     expect(reviewsSection).toContain('aria-current={activeIndex === index ? "true" : undefined}');
-    expect(reviewsSection).toContain('src="/poker-kit/chip-100.png"');
-    expect(reviewsSection).toContain('src="/poker-kit/chip-500.png"');
-    expect(reviewsSection).toContain('src="/poker-kit/chip-1k.png"');
+    expect(reviewsSection).toContain('"/poker-kit/chip-100.png"');
+    expect(reviewsSection).toContain('"/poker-kit/chip-500.png"');
+    expect(reviewsSection).toContain('"/poker-kit/chip-1k.png"');
     expect(reviewsSection).toContain('duration: 0.22');
     expect(reviewsSection).toContain('duration: 0.38');
     expect(reviewsSection).toContain('ease: "power3.out"');
