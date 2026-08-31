@@ -46,6 +46,10 @@ describe("Final CTA chip motion", () => {
     const finalCTA = readFileSync(finalCTAPath, "utf8");
     expect(finalCTA).toContain("<FinalCTAChip />");
     expect(finalCTA).not.toContain("final-cta-cards");
+    expect(finalCTA).toContain("min-h-[100svh]");
+    expect(finalCTA).toContain("md:top-[clamp(24px,4vw,56px)]");
+    expect(finalCTA).toContain("md:right-[19%]");
+    expect(finalCTA).not.toContain("md:bottom-[-250px]");
     const styles = readFileSync(resolve(process.cwd(), "app/globals.css"), "utf8");
     expect(styles).not.toContain("final-chip-float");
   });
