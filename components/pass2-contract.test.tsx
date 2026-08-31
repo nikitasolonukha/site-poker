@@ -121,7 +121,7 @@ describe("PASS 2 visual system contract", () => {
     expect(why).toContain("bg-[#11090B]");
     expect(why).toContain("bg-[#18090D]");
     expect(why).toContain("bg-[#21070F]");
-    expect(why).toContain("opacity-80");
+    expect(why).toContain("opacity: 0.78");
     expect(why).toContain("scrub: 0.6");
   });
   it("renders Formats as click-selected 3D playing cards without auto switch", () => {
