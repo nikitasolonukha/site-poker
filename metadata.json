@@ -1,0 +1,6 @@
+{
+  "name": "MAGNUM",
+  "description": "Клуб спортивного покера в Москве",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

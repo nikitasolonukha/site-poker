@@ -1,0 +1,50 @@
+import { siteConfig } from "@/config/site";
+import Image from "next/image";
+
+export default function FinalCTA() {
+  return (
+    <section className="relative bg-[#7D0B29] py-32 md:py-48 overflow-hidden text-[#F1EFE9]">
+      {/* Abstract Background Element */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] md:w-[100vw] aspect-square opacity-[0.12] pointer-events-none mix-blend-overlay">
+        <Image
+          src="/magnum-bg.svg"
+          alt="Magnum Background"
+          fill
+          className="object-cover"
+          sizes="100vw"
+        />
+      </div>
+
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 relative z-10 flex flex-col md:flex-row items-center justify-between pb-12">
+        <div className="w-full flex flex-col items-center md:items-start text-center md:text-left">
+          <h2 className="font-display text-7xl md:text-8xl lg:text-[11rem] font-bold uppercase mb-12 text-[#F1EFE9] tracking-tight leading-[0.85]">
+            ТВОЙ<br/>
+            ХОД.
+          </h2>
+          
+          <div className="mt-8">
+            <a
+              href={siteConfig.bookingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block py-4 border-b-2 border-[#F1EFE9] text-[#F1EFE9] hover:opacity-70 text-xl md:text-2xl font-bold tracking-widest uppercase transition-opacity duration-300"
+            >
+              Записаться ↗
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Decorative Chip - 30% visible from bottom */}
+      <div className="absolute left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-[15%] bottom-[-20vw] md:bottom-[-250px] w-[80vw] md:w-[600px] aspect-square pointer-events-none z-20">
+        <Image
+          src="/magnum-chip.svg"
+          alt="Magnum Chip"
+          fill
+          className="object-contain drop-shadow-[0_40px_80px_rgba(0,0,0,0.5)]"
+          sizes="(max-width: 768px) 80vw, 600px"
+        />
+      </div>
+    </section>
+  );
+}
