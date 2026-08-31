@@ -146,7 +146,6 @@ export default function Gallery() {
                   src={item.src}
                   alt={item.alt}
                   fill
-                  quality={90}
                   priority={index < 4}
                   onLoad={handleImageLoad}
                   className="object-cover outline outline-1 -outline-offset-1 outline-white/10 transition-transform duration-500 ease-out group-hover:scale-[1.025]"

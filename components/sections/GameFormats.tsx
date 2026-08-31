@@ -19,7 +19,8 @@ export default function GameFormats() {
   const timersRef = useRef<number[]>([]);
 
   useEffect(() => {
-    return () => timersRef.current.forEach((timer) => window.clearTimeout(timer));
+    const timers = timersRef.current;
+    return () => timers.forEach((timer) => window.clearTimeout(timer));
   }, []);
 
   const finishSelection = () => {
@@ -75,7 +76,7 @@ export default function GameFormats() {
     }
 
     return {
-      transform: \`translate3d(\${x}px, \${y}px, 0) rotateZ(\${rotation}deg) scale(\${scale})\`,
+      transform: `translate3d(${x}px, ${y}px, 0) rotateZ(${rotation}deg) scale(${scale})`,
       zIndex: selectedIndex === index ? 40 : index === 1 ? 20 : 10 + index,
     };
   };
@@ -110,7 +111,7 @@ export default function GameFormats() {
               tabIndex={phase === "transitioning" ? -1 : 0}
               aria-pressed={isSelected}
               aria-disabled={phase === "transitioning"}
-              aria-label={\`Выбрать \${format.title}\`}
+              aria-label={`Выбрать ${format.title}`}
               className="format-card-shell relative shrink-0 snap-center cursor-pointer outline-none md:absolute md:bottom-0"
               style={getCardStyle(index)}
               onClick={() => selectCard(index)}
@@ -118,7 +119,7 @@ export default function GameFormats() {
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
             >
-              <div className={\`card-inner \${isSelected ? "is-flipped" : ""}\`}>
+              <div className={`card-inner ${isSelected ? "is-flipped" : ""}`}>
                 <div className="card-back">
                   <Image
                     src="/magnum-card.svg"

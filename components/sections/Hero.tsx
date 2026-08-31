@@ -51,10 +51,30 @@ export default function Hero() {
 
   const handleChipClick = () => {
     if (!chipInteractiveRef.current || chipIsAnimatingRef.current) return;
+    if (chipInteractiveRef.current) {
+      gsap.set(chipInteractiveRef.current, {
+        rotateX: 0,
+        rotateY: 0,
+        rotateZ: 0,
+        x: 0,
+        y: 0,
+        scale: 1,
+      });
+    }
     chipIsAnimatingRef.current = true;
 
     const finish = () => {
       chipIsAnimatingRef.current = false;
+      if (chipInteractiveRef.current) {
+        gsap.set(chipInteractiveRef.current, {
+          rotateX: 0,
+          rotateY: 0,
+          rotateZ: 0,
+          x: 0,
+          y: 0,
+          scale: 1,
+        });
+      }
       chipAnimationRef.current = null;
     };
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -181,7 +201,7 @@ export default function Hero() {
               href={siteConfig.bookingUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block py-3 border-b border-[rgba(241,239,233,0.55)] text-warm-white hover:border-warm-white text-base sm:text-lg font-bold tracking-widest uppercase transition-all duration-300"
+              className="inline-flex min-h-11 items-center py-3 border-b border-[rgba(241,239,233,0.55)] text-warm-white hover:border-warm-white text-base sm:text-lg font-bold tracking-widest uppercase transition-colors duration-300"
             >
               Записаться ↗
             </a>
