@@ -29,6 +29,14 @@ describe("Final CTA chip motion", () => {
     expect(source).toContain("cycleDuration: 7");
     expect(source).toContain("cycleDuration: 9.8");
     expect(source).toContain("duration: preset.cycleDuration / 2");
+    expect(source).toContain("idleY: -10");
+    expect(source).toContain("idleY: 14");
+    expect(source).toContain("idleY: -16");
+    expect(source).toContain("idleY: 8");
+    expect(source).toContain("rotateZ: 2.2");
+    expect(source).toContain("rotateZ: -3.2");
+    expect(source).toContain("rotateZ: 3.8");
+    expect(source).toContain("rotateZ: -2");
     expect(source).toContain("parallax: 6");
     expect(source).toContain("parallax: 14");
     expect(source).toContain("requestAnimationFrame");
