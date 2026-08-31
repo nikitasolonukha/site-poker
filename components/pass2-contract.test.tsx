@@ -216,7 +216,7 @@ describe("PASS 2 visual system contract", () => {
     );
   });
 
-  it("renders all currently verified reviews as scannable cards with real sources", async () => {
+  it("renders the verified reviews as an editorial slider with an active review and next preview", async () => {
     const modulePath = "./sections/Reviews";
     const { default: Reviews } = await import(/* @vite-ignore */ modulePath);
     render(<Reviews />);
@@ -225,33 +225,39 @@ describe("PASS 2 visual system contract", () => {
     expect(screen.getByText("4.7 ★")).toBeInTheDocument();
     expect(screen.getByText("27 ОЦЕНОК")).toBeInTheDocument();
     expect(screen.getByText("17 ОТЗЫВОВ")).toBeInTheDocument();
-    expect(screen.getAllByRole("article")).toHaveLength(3);
+    expect(screen.getByTestId("reviews-slider")).toHaveAttribute("aria-roledescription", "carousel");
+    expect(screen.getByTestId("review-slide-yandex-1")).toHaveAttribute("aria-current", "true");
+    expect(screen.getByTestId("review-slide-yandex-2")).toHaveAttribute("data-position", "next");
     expect(screen.getByText("«Лучший клуб покера из всех, где я был»")).toBeInTheDocument();
-    expect(screen.getByText("АЛЁНА БИКЕЕВА")).toBeInTheDocument();
-    expect(screen.getAllByRole("link", { name: /Яндекс Карты/i })).toHaveLength(4);
-    expect(screen.getByRole("button", { name: "Показать предыдущие отзывы" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Показать следующие отзывы" })).toBeInTheDocument();
+    expect(screen.getByTestId("reviews-progress-chip")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Предыдущий отзыв" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Следующий отзыв" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Смотреть все 17 отзывов/i })).toHaveAttribute(
+      "rel",
+      "noopener noreferrer",
+    );
   });
 
-  it("uses an accessible responsive review track between Gallery and Location", () => {
+  it("uses an accessible editorial review track between Gallery and Location", () => {
     const page = projectFile("app/page.tsx");
     const reviewsSection = projectFile("components/sections/Reviews.tsx");
 
     expect(page.indexOf("<Gallery />")).toBeLessThan(page.indexOf("<Reviews />"));
     expect(page.indexOf("<Reviews />")).toBeLessThan(page.indexOf("<Location />"));
-    expect(reviewsSection).toContain("rgba(125,11,41,.13)");
+    expect(reviewsSection).toContain("rgba(125, 11, 41, .16)");
     expect(reviewsSection).toContain("27 ОЦЕНОК");
-    expect(reviewsSection).toContain("grid-flow-col");
-    expect(reviewsSection).toContain("auto-cols-[86vw]");
-    expect(reviewsSection).toContain("md:auto-cols-[calc((100%-18px)/2)]");
-    expect(reviewsSection).toContain("lg:auto-cols-[calc((100%-48px)/3)]");
-    expect(reviewsSection).toContain("snap-x snap-mandatory");
-    expect(reviewsSection).toContain("scrollBy");
-    expect(reviewsSection).toContain("duration: 0.45");
-    expect(reviewsSection).toContain("stagger: 0.07");
+    expect(reviewsSection).toContain('aria-roledescription="carousel"');
+    expect(reviewsSection).toContain("onPointerDown");
+    expect(reviewsSection).toContain("onPointerMove");
+    expect(reviewsSection).toContain("onPointerUp");
+    expect(reviewsSection).toContain("ArrowRight");
+    expect(reviewsSection).toContain("power3.inOut");
+    expect(reviewsSection).toContain("duration: 0.72");
+    expect(reviewsSection).toContain("magnum-chip.svg");
     expect(reviewsSection).not.toContain("reviewChips");
-    expect(reviewsSection).not.toContain("aria-current={activeIndex");
+    expect(reviewsSection).not.toContain("data-review-card");
   });
+
   it("places the supplied card-group illustration beside the final CTA", () => {
     const finalCta = projectFile("components/sections/FinalCTA.tsx");
 
