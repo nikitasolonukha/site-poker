@@ -1,250 +1,180 @@
 "use client";
 
-import Image from "next/image";
 import gsap from "gsap";
-import {
-  type KeyboardEvent,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useRef } from "react";
 import { reviews } from "../../data/reviews";
 
-const reviewChips = [
-  { src: "/poker-kit/chip-100.png", alt: "Фишка 100" },
-  { src: "/poker-kit/chip-500.png", alt: "Фишка 500" },
-  { src: "/poker-kit/chip-1k.png", alt: "Фишка 1K" },
-] as const;
+const REVIEWS_URL = "https://yandex.ru/maps/-/CTTRFVMQ";
 
 const prefersReducedMotion = () =>
   typeof window !== "undefined" &&
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 export default function Reviews() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const detailsRef = useRef<HTMLDivElement>(null);
-  const hasMountedRef = useRef(false);
-  const isTransitioningRef = useRef(false);
-  const outgoingTweenRef = useRef<gsap.core.Tween | null>(null);
-  const incomingTimelineRef = useRef<gsap.core.Timeline | null>(null);
-
-  const activeReview = reviews[activeIndex];
+  const sectionRef = useRef<HTMLElement>(null);
+  const trackRef = useRef<HTMLOListElement>(null);
 
   useEffect(() => {
-    return () => {
-      outgoingTweenRef.current?.kill();
-      incomingTimelineRef.current?.kill();
-    };
+    const section = sectionRef.current;
+    if (!section || prefersReducedMotion() || typeof IntersectionObserver === "undefined") {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+
+        const cards = section.querySelectorAll<HTMLElement>("[data-review-card]");
+        gsap.fromTo(
+          cards,
+          { y: 18, opacity: 0.75 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.45,
+            stagger: 0.07,
+            ease: "power3.out",
+            overwrite: "auto",
+          },
+        );
+        observer.disconnect();
+      },
+      { threshold: 0.18 },
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
-    if (!hasMountedRef.current) {
-      hasMountedRef.current = true;
-      return;
-    }
+  const scrollTrack = (direction: -1 | 1) => {
+    const track = trackRef.current;
+    const card = track?.querySelector<HTMLElement>("[data-review-card]");
+    if (!track || !card) return;
 
-    const content = contentRef.current;
-    const details = detailsRef.current;
-
-    if (!content || !details || prefersReducedMotion()) {
-      gsap.set([content, details].filter(Boolean), { opacity: 1, y: 0 });
-      isTransitioningRef.current = false;
-      return;
-    }
-
-    incomingTimelineRef.current?.kill();
-    const timeline = gsap.timeline({
-      onComplete: () => {
-        isTransitioningRef.current = false;
-      },
-    });
-
-    timeline.set(details, { opacity: 0, y: 6 });
-    timeline.fromTo(
-      content,
-      { opacity: 0, y: 14 },
-      { opacity: 1, y: 0, duration: 0.38, ease: "power3.out" },
-    );
-    timeline.to(
-      details,
-      { opacity: 1, y: 0, duration: 0.28, ease: "power3.out" },
-      "+=0.06",
-    );
-
-    incomingTimelineRef.current = timeline;
-
-    return () => {
-      timeline.kill();
-    };
-  }, [activeIndex]);
-
-  const selectReview = (nextIndex: number) => {
-    if (
-      nextIndex === activeIndex ||
-      isTransitioningRef.current ||
-      nextIndex < 0 ||
-      nextIndex >= reviews.length
-    ) {
-      return;
-    }
-
-    if (prefersReducedMotion() || !contentRef.current) {
-      setActiveIndex(nextIndex);
-      return;
-    }
-
-    isTransitioningRef.current = true;
-    outgoingTweenRef.current?.kill();
-    outgoingTweenRef.current = gsap.to(contentRef.current, {
-      opacity: 0,
-      y: -12,
-      duration: 0.22,
-      ease: "power3.out",
-      onComplete: () => setActiveIndex(nextIndex),
+    const gap = Number.parseFloat(window.getComputedStyle(track).columnGap) || 0;
+    track.scrollBy({
+      left: direction * (card.getBoundingClientRect().width + gap),
+      behavior: prefersReducedMotion() ? "auto" : "smooth",
     });
   };
 
-  const handleNavigationKey = (event: KeyboardEvent<HTMLElement>) => {
-    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
-
-    event.preventDefault();
-    const direction = event.key === "ArrowRight" ? 1 : -1;
-    const nextIndex = (activeIndex + direction + reviews.length) % reviews.length;
-    selectReview(nextIndex);
-  };
+  if (!reviews.length) return null;
 
   return (
     <section
+      ref={sectionRef}
       id="reviews"
       aria-labelledby="reviews-title"
-      className="relative isolate overflow-hidden text-[#F1EFE9]"
+      className="overflow-hidden bg-[#08090B] text-[#F1EFE9]"
       style={{
         background:
-          "radial-gradient(circle at 72% 30%, rgba(125,11,41,.20), transparent 40%), #08090B",
+          "radial-gradient(circle at 80% 20%, rgba(125,11,41,.13), transparent 38%), #08090B",
       }}
     >
-      <Image
-        src="/magnum-bg.svg"
-        alt=""
-        aria-hidden="true"
-        fill
-        sizes="100vw"
-        className="pointer-events-none -z-10 object-cover opacity-[0.035] md:hidden"
-      />
-
-      <div className="mx-auto flex min-h-[720px] max-w-[1280px] flex-col px-5 py-20 md:min-h-[80svh] md:px-10 md:py-16 lg:px-14">
-        <header className="flex flex-wrap items-center gap-x-5 gap-y-3 border-b border-white/10 pb-5 text-[10px] font-bold tracking-[0.18em] text-[#B9B4B5] sm:text-[11px]">
-          <h2 id="reviews-title" className="text-[#F1EFE9]">
+      <div className="mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:pt-[110px] md:pb-[120px] lg:px-14">
+        <header className="mb-11 flex flex-col gap-6 md:mb-14 md:flex-row md:items-end md:justify-between">
+          <h2
+            id="reviews-title"
+            className="font-display text-5xl font-medium leading-[0.95] tracking-[-0.045em] text-[#F1EFE9] md:text-[clamp(3rem,5vw,4.5rem)]"
+          >
             ОТЗЫВЫ
           </h2>
-          <span>ЯНДЕКС КАРТЫ</span>
-          <span className="text-[#D8C3CA]">4.7 ★</span>
-          <span>17 ОТЗЫВОВ</span>
+
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[12px] font-semibold tracking-[0.1em] sm:text-sm">
+            <span className="text-[#F1EFE9]">4.7 ★</span>
+            <span className="text-[#F1EFE9]/55">27 ОЦЕНОК</span>
+            <span className="text-[#F1EFE9]/55">17 ОТЗЫВОВ</span>
+            <a
+              href={REVIEWS_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="text-[#F1EFE9]/55 transition-colors hover:text-[#F1EFE9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B22554]"
+            >
+              ЯНДЕКС КАРТЫ ↗
+            </a>
+          </div>
         </header>
 
-        <div className="grid flex-1 items-center gap-12 py-12 md:grid-cols-[minmax(0,65fr)_minmax(250px,35fr)] md:gap-8 lg:py-16">
-          <div className="max-w-[820px]">
-            <div ref={contentRef} aria-live="polite" aria-atomic="true">
-              <p
-                aria-hidden="true"
-                className="mb-5 font-display text-[12px] font-bold tracking-[0.24em] text-[#B22554]"
-              >
-                {String(activeIndex + 1).padStart(2, "0")}
-              </p>
-
-              <blockquote>
-                <p className="font-display text-[clamp(2rem,4.8vw,4.875rem)] font-medium leading-[0.98] tracking-[-0.045em] text-[#F1EFE9]">
-                  {activeReview.quote}
-                </p>
-              </blockquote>
-
-              <div ref={detailsRef} className="mt-9 max-w-[560px]">
-                <p className="text-[11px] font-bold tracking-[0.16em] text-[#F1EFE9] sm:text-xs">
-                  {activeReview.author.toUpperCase()}
-                </p>
-                <a
-                  href={activeReview.sourceUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-3 inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.16em] text-[#C9A6B1] transition-colors hover:text-[#F1EFE9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B22554] sm:text-[11px]"
-                >
-                  <span className="uppercase">{activeReview.source}</span>
-                  <span aria-hidden="true">↗</span>
-                </a>
-                <p className="mt-4 max-w-[500px] text-sm leading-relaxed text-[#B9B4B5] sm:text-base">
-                  {activeReview.summary}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <aside
-            aria-hidden="true"
-            className="relative hidden min-h-[360px] overflow-hidden border-l border-white/10 pl-8 md:flex md:flex-col md:justify-end lg:pl-12"
-          >
-            <Image
-              src="/magnum-bg.svg"
-              alt=""
-              fill
-              sizes="35vw"
-              className="object-cover object-center opacity-[0.07]"
-            />
-            <div className="relative z-10 pb-2">
-              <p className="font-display text-[clamp(5rem,10vw,9rem)] leading-none tracking-[-0.08em] text-[#F1EFE9]/90">
-                {String(activeIndex + 1).padStart(2, "0")}
-              </p>
-              <p className="mt-5 text-[10px] font-bold tracking-[0.22em] text-[#B9B4B5]">
-                MAGNUM / 4.7★
-              </p>
-              <p className="mt-2 text-[10px] tracking-[0.16em] text-[#7E7376]">
-                {String(activeIndex + 1).padStart(2, "0")} / {String(reviews.length).padStart(2, "0")}
-              </p>
-            </div>
-          </aside>
-        </div>
-
-        <nav
-          aria-label="Навигация по отзывам"
-          onKeyDown={handleNavigationKey}
-          className="flex items-center justify-between gap-6 border-t border-white/10 pt-5"
+        <ol
+          ref={trackRef}
+          id="reviews-track"
+          aria-label="Отзывы гостей"
+          className="grid snap-x snap-mandatory grid-flow-col auto-cols-[86vw] gap-[18px] overflow-x-auto pb-3 pr-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:auto-cols-[calc((100%-18px)/2)] md:gap-[18px] md:pr-0 lg:auto-cols-[calc((100%-48px)/3)] lg:gap-6"
         >
-          <div className="flex items-center gap-3">
-            {reviews.map((review, index) => {
-              const isActive = activeIndex === index;
-              const chip = reviewChips[index];
+          {reviews.map((review, index) => (
+            <li key={review.id} className="snap-start">
+              <article
+                data-review-card
+                className="flex min-h-[300px] h-full flex-col rounded-[2px] border border-[rgba(241,239,233,.09)] bg-[#11090B] p-[30px] sm:min-h-[320px] sm:p-[34px]"
+              >
+                <p className="text-xs font-semibold tracking-[0.18em] text-[#B22554]">
+                  {String(index + 1).padStart(2, "0")}
+                </p>
 
-              return (
-                <button
-                  key={review.id}
-                  type="button"
-                  onClick={() => selectReview(index)}
-                  aria-label={`Показать отзыв ${review.author}`}
-                  aria-current={activeIndex === index ? "true" : undefined}
-                  className="grid min-h-11 min-w-11 place-items-center rounded-full outline-none transition-opacity focus-visible:ring-2 focus-visible:ring-[#B22554] focus-visible:ring-offset-4 focus-visible:ring-offset-[#08090B]"
-                >
-                  <Image
-                    src={chip.src}
-                    alt=""
-                    aria-hidden="true"
-                    width={44}
-                    height={44}
-                    sizes="(max-width: 640px) 40px, 44px"
-                    className={`h-10 w-10 object-contain transition-[opacity,transform] duration-200 ease-out sm:h-11 sm:w-11 ${
-                      isActive
-                        ? "-translate-y-1 scale-100 opacity-100"
-                        : "translate-y-0 scale-[.86] opacity-40 hover:-translate-y-0.5 hover:opacity-75"
-                    }`}
-                  />
-                </button>
-              );
-            })}
-          </div>
+                <blockquote className="mt-7">
+                  <p className="font-sans text-xl font-medium leading-[1.34] text-[#F1EFE9] sm:text-[22px] lg:text-[26px] lg:leading-[1.3]">
+                    {review.quote}
+                  </p>
+                  {review.body && (
+                    <p className="mt-5 text-sm leading-[1.5] text-[#F1EFE9]/55 sm:text-[15px]">
+                      {review.body}
+                    </p>
+                  )}
+                </blockquote>
 
-          <p className="text-[11px] font-bold tracking-[0.18em] text-[#B9B4B5]">
-            {String(activeIndex + 1).padStart(2, "0")} / {String(reviews.length).padStart(2, "0")}
-          </p>
-        </nav>
+                <footer className="mt-auto pt-8">
+                  <p className="text-xs font-bold tracking-[0.14em] text-[#F1EFE9]">
+                    {review.author.toUpperCase()}
+                  </p>
+                  <a
+                    href={review.sourceUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-3 inline-flex text-[11px] font-semibold tracking-[0.1em] text-[#F1EFE9]/55 transition-colors hover:text-[#F1EFE9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B22554]"
+                  >
+                    ЯНДЕКС КАРТЫ ↗
+                  </a>
+                </footer>
+              </article>
+            </li>
+          ))}
+        </ol>
+
+        <div className="mt-8 flex flex-col gap-6 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <nav aria-label="Управление списком отзывов" className="flex items-center gap-3">
+            <button
+              type="button"
+              aria-label="Показать предыдущие отзывы"
+              aria-controls="reviews-track"
+              onClick={() => scrollTrack(-1)}
+              className="grid h-11 w-11 place-items-center border border-white/20 text-lg text-[#F1EFE9] transition-colors hover:border-[#F1EFE9]/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B22554]"
+            >
+              <span aria-hidden="true">←</span>
+            </button>
+            <button
+              type="button"
+              aria-label="Показать следующие отзывы"
+              aria-controls="reviews-track"
+              onClick={() => scrollTrack(1)}
+              className="grid h-11 w-11 place-items-center border border-white/20 text-lg text-[#F1EFE9] transition-colors hover:border-[#F1EFE9]/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B22554]"
+            >
+              <span aria-hidden="true">→</span>
+            </button>
+            <p className="ml-2 text-xs font-semibold tracking-[0.12em] text-[#F1EFE9]/55">
+              <span className="sm:hidden">01 / 17</span>
+              <span className="hidden sm:inline">01—03 / 17</span>
+            </p>
+          </nav>
+
+          <a
+            href={REVIEWS_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex w-fit border-b border-[#F1EFE9]/45 pb-1 text-xs font-bold tracking-[0.1em] text-[#F1EFE9] transition-[border-color,color] duration-150 hover:border-[#F1EFE9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#B22554]"
+          >
+            СМОТРЕТЬ ВСЕ 17 ОТЗЫВОВ ↗
+          </a>
+        </div>
       </div>
     </section>
   );
