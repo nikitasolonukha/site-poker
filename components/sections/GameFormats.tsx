@@ -1,21 +1,23 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import Image from "next/image";
 import { formats } from "@/data/formats";
 import { siteConfig } from "@/config/site";
+import { getCardPresentation } from "./gameFormatsInteraction";
 
-type TransitionState = "idle" | "transitioning" | "selected";
-
-const fanX = [70, 0, -70];
-const fanY = [6, -8, 6];
-const fanRotation = [-8, 0, 8];
+const SELECT_SPACING_MS = 400;
+const FLIP_MS = 550;
+const SWITCH_REPOSITION_MS = 350;
+const SWITCH_FLIP_MS = 700;
+const SWITCH_COMPLETE_MS = 1250;
 
 export default function GameFormats() {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [flippedIndex, setFlippedIndex] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [detailIndex, setDetailIndex] = useState<number | null>(null);
-  const [phase, setPhase] = useState<TransitionState>("idle");
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const timersRef = useRef<number[]>([]);
 
   useEffect(() => {
@@ -23,27 +25,35 @@ export default function GameFormats() {
     return () => timers.forEach((timer) => window.clearTimeout(timer));
   }, []);
 
-  const finishSelection = () => {
-    const timer = window.setTimeout(() => setPhase("selected"), 560);
+  const schedule = (callback: () => void, delay: number) => {
+    const timer = window.setTimeout(callback, delay);
     timersRef.current.push(timer);
   };
 
   const selectCard = (index: number) => {
-    if (phase === "transitioning" || selectedIndex === index) return;
-    setPhase("transitioning");
+    if (isTransitioning || selectedIndex === index) return;
 
-    if (selectedIndex === null) {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setHoveredIndex(null);
       setSelectedIndex(index);
-      finishSelection();
+      setFlippedIndex(index);
       return;
     }
 
-    setSelectedIndex(null);
-    const timer = window.setTimeout(() => {
+    setIsTransitioning(true);
+    setHoveredIndex(null);
+
+    if (selectedIndex === null) {
       setSelectedIndex(index);
-      finishSelection();
-    }, 560);
-    timersRef.current.push(timer);
+      schedule(() => setFlippedIndex(index), SELECT_SPACING_MS);
+      schedule(() => setIsTransitioning(false), SELECT_SPACING_MS + FLIP_MS);
+      return;
+    }
+
+    setFlippedIndex(null);
+    schedule(() => setSelectedIndex(index), SWITCH_REPOSITION_MS);
+    schedule(() => setFlippedIndex(index), SWITCH_FLIP_MS);
+    schedule(() => setIsTransitioning(false), SWITCH_COMPLETE_MS);
   };
 
   const handleCardKeyDown = (event: KeyboardEvent<HTMLDivElement>, index: number) => {
@@ -53,31 +63,20 @@ export default function GameFormats() {
     }
   };
 
-  const getCardStyle = (index: number): CSSProperties => {
-    let x = fanX[index];
-    let y = fanY[index];
-    let rotation = fanRotation[index];
-    let scale = 1;
-
-    if (hoveredIndex !== null) {
-      if (hoveredIndex === index) {
-        y = -26;
-        rotation = 0;
-        scale = 1.025;
-      } else {
-        x += index < hoveredIndex ? -26 : 26;
-      }
-    }
-
-    if (selectedIndex === index) {
-      y = -26;
-      rotation = 0;
-      scale = 1.05;
-    }
+  const getCardStyle = (index: number) => {
+    const presentation = getCardPresentation(
+      index,
+      hoveredIndex,
+      selectedIndex,
+    );
 
     return {
-      transform: `translate3d(${x}px, ${y}px, 0) rotateZ(${rotation}deg) scale(${scale})`,
-      zIndex: selectedIndex === index ? 40 : index === 1 ? 20 : 10 + index,
+      transform:
+        "translate3d(" + presentation.x + "px, " + presentation.y +
+        "px, 0) rotateZ(" + presentation.rotation + "deg) scale(" +
+        presentation.scale + ")",
+      opacity: presentation.opacity,
+      zIndex: presentation.zIndex,
     };
   };
 
@@ -87,9 +86,9 @@ export default function GameFormats() {
     <section
       id="formats"
       className="relative w-full overflow-hidden bg-[radial-gradient(circle_at_50%_50%,rgba(125,11,41,.22),transparent_55%),#21060C] px-0 py-24 md:px-[5vw] md:py-[120px]"
-      data-state={phase}
+      data-state={isTransitioning ? "transitioning" : selectedIndex === null ? "idle" : "selected"}
     >
-      {phase === "transitioning" && (
+      {isTransitioning && (
         <span className="sr-only" aria-live="polite" data-state="transitioning">
           Карты меняются
         </span>
@@ -104,22 +103,32 @@ export default function GameFormats() {
       <div className="format-fan hide-scroll flex items-end gap-4 overflow-x-auto snap-x snap-mandatory px-[9vw] pb-8 md:relative md:mx-auto md:h-[520px] md:w-[min(1180px,92vw)] md:justify-center md:overflow-visible md:px-0 md:pb-0">
         {formats.slice(0, 3).map((format, index) => {
           const isSelected = selectedIndex === index;
+          const isFlipped = flippedIndex === index;
           return (
             <div
               key={format.id}
               role="button"
-              tabIndex={phase === "transitioning" ? -1 : 0}
+              tabIndex={isTransitioning ? -1 : 0}
               aria-pressed={isSelected}
-              aria-disabled={phase === "transitioning"}
+              aria-disabled={isTransitioning}
               aria-label={`Выбрать ${format.title}`}
               className="format-card-shell relative shrink-0 snap-center cursor-pointer outline-none md:absolute md:bottom-0"
               style={getCardStyle(index)}
               onClick={() => selectCard(index)}
               onKeyDown={(event) => handleCardKeyDown(event, index)}
-              onMouseEnter={() => setHoveredIndex(index)}
-              onMouseLeave={() => setHoveredIndex(null)}
+              onMouseEnter={() => {
+                if (!isTransitioning && index !== selectedIndex) setHoveredIndex(index);
+              }}
+              onMouseLeave={() => {
+                setHoveredIndex((current) => current === index ? null : current);
+              }}
             >
-              <div className={`card-inner ${isSelected ? "is-flipped" : ""}`}>
+              {isSelected && (
+                <span className="format-selected-indicator pointer-events-none absolute left-1/2 top-[-30px] hidden -translate-x-1/2 whitespace-nowrap font-sans text-[10px] font-semibold tracking-[0.14em] text-[#F1EFE9]/65 md:block">
+                  ВЫБРАНО
+                </span>
+              )}
+              <div className={`card-inner ${isFlipped ? "is-flipped" : ""}`}>
                 <div className="card-back">
                   <Image
                     src="/magnum-card.svg"

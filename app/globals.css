@@ -203,9 +203,9 @@ section[id] {
   width: clamp(310px, 23vw, 340px);
   aspect-ratio: 2.5 / 3.5;
   perspective: 1100px;
-  transition-property: transform;
-  transition-duration: 300ms;
-  transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+  transition-property: transform, opacity;
+  transition-duration: 450ms;
+  transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .format-card-shell:focus-visible {
