@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { gallery } from "../data/gallery";
+import { reviews } from "../data/reviews";
 import { whyFeatures } from "../data/why";
 import { siteConfig } from "../config/site";
 
@@ -170,6 +171,48 @@ describe("PASS 2 visual system contract", () => {
     expect(gallery.every((item) => item.caption.includes("/ 08"))).toBe(true);
   });
 
+  it("publishes exactly the three verified Yandex Maps reviews", () => {
+    expect(reviews).toHaveLength(3);
+    expect(reviews).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: "yandex-1",
+          author: "Дима Ярец",
+          quote: "Лучший клуб покера из всех, где я был",
+          source: "Яндекс Карты",
+          sourceUrl: "https://yandex.ru/maps/-/CTTRFVMQ",
+        }),
+        expect.objectContaining({
+          id: "yandex-2",
+          author: "Алёна Бикеева",
+          quote: "Очень тёплое и уютное место",
+        }),
+        expect.objectContaining({
+          id: "yandex-3",
+          author: "1TLM",
+          quote: "Персонал на высшем уровне",
+        }),
+      ]),
+    );
+  });
+
+  it("places an accessible editorial reviews section between Gallery and Location", () => {
+    const page = projectFile("app/page.tsx");
+    const reviewsSection = projectFile("components/sections/Reviews.tsx");
+
+    expect(page.indexOf("<Gallery />")).toBeLessThan(page.indexOf("<Reviews />"));
+    expect(page.indexOf("<Reviews />")).toBeLessThan(page.indexOf("<Location />"));
+    expect(reviewsSection).toContain("4.7");
+    expect(reviewsSection).toContain("17 ОТЗЫВОВ");
+    expect(reviewsSection).toContain("Показать отзыв ${review.author}");
+    expect(reviewsSection).toContain('aria-current={activeIndex === index ? "true" : undefined}');
+    expect(reviewsSection).toContain('src="/poker-kit/chip-100.png"');
+    expect(reviewsSection).toContain('src="/poker-kit/chip-500.png"');
+    expect(reviewsSection).toContain('src="/poker-kit/chip-1k.png"');
+    expect(reviewsSection).toContain('duration: 0.22');
+    expect(reviewsSection).toContain('duration: 0.38');
+    expect(reviewsSection).toContain('ease: "power3.out"');
+  });
   it("places the supplied card-group illustration beside the final CTA", () => {
     const finalCta = projectFile("components/sections/FinalCTA.tsx");
 
