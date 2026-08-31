@@ -84,13 +84,14 @@ describe("PASS 2 visual system contract", () => {
     expect(chip).toContain("ChipSceneErrorBoundary");
     expect(chip).not.toContain("rotation={[Math.PI / 2, 0, 0]}");
     expect(chip).toContain('dispose={null}');
-    expect(chip).toContain("isAnimatingRef");
+    expect(chip).not.toContain("isAnimatingRef");
     expect(chip).toContain("object.castShadow = true");
     expect(chip).not.toContain("object.material = new THREE.MeshStandardMaterial");
     expect(chip).toContain("hasPaintedRef");
-    expect(chip).toContain("FLIP_DURATION = 1.2");
-    expect(chip).toContain("Math.PI * 2 * eased");
-    expect(chip).not.toContain("Math.PI * 2.6");
+    expect(chip).not.toContain("FLIP_DURATION");
+    expect(chip).not.toContain("Math.PI * 2");
+    expect(chip).not.toContain("onPointerMove");
+    expect(chip).not.toContain("onClick");
     expect(chip).toContain("<Suspense fallback={null}>");
     expect(chip).toContain("onCreated");
     expect(hero).toContain("MagnumChip3D");
@@ -137,7 +138,8 @@ describe("PASS 2 visual system contract", () => {
     expect(why).toContain("bg-[#11090B]");
     expect(why).toContain("bg-[#18090D]");
     expect(why).toContain("bg-[#21070F]");
-    expect(why).toContain("relative overflow-x-clip pb-16 md:pb-[26vh]");
+    expect(why).toContain("relative overflow-x-clip pb-16");
+    expect(why).toContain("relative z-10 space-y-6 md:space-y-0 md:pb-[26vh]");
     expect(why).toContain("md:sticky");
     expect(why).toContain("md:top-[13vh]");
     expect(why).toContain("md:w-[82vw]");
