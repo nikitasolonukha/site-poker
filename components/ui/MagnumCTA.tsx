@@ -13,7 +13,7 @@ interface MagnumCTAProps {
 }
 
 export default function MagnumCTA({
-  chip = "/magnum-chip.svg",
+  chip = "/chips/magnum-chip-cta.webp",
   title,
   label,
   href,
@@ -26,15 +26,20 @@ export default function MagnumCTA({
     const chipElement = chipRef.current;
     if (!container || !chipElement) return;
 
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const hoverTimeline = gsap.timeline({ paused: true }).to(chipElement, {
-      x: 32,
-      rotation: 95,
-      duration: 0.45,
+      x: 3,
+      rotation: 3,
+      duration: 0.6,
       ease: "power2.out",
     });
 
-    const handleEnter = () => hoverTimeline.play();
-    const handleLeave = () => hoverTimeline.reverse();
+    const handleEnter = () => {
+      if (!prefersReducedMotion) hoverTimeline.play();
+    };
+    const handleLeave = () => {
+      if (!prefersReducedMotion) hoverTimeline.reverse();
+    };
 
     container.addEventListener("mouseenter", handleEnter);
     container.addEventListener("mouseleave", handleLeave);
@@ -61,18 +66,26 @@ export default function MagnumCTA({
               {title}
             </h3>
 
-            <div className="relative mx-4 hidden h-px flex-1 items-center bg-white/10 md:flex">
+            <div className="relative mx-0 flex h-px w-32 flex-none items-center bg-white/10 md:mx-4 md:w-auto md:flex-1">
               <div
-                ref={chipRef}
-                className="absolute left-[15%] top-1/2 w-[46px] h-[46px] -translate-y-1/2 drop-shadow-lg"
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:left-[15%] md:translate-x-0"
+                aria-hidden="true"
               >
-                <Image
-                  src={chip}
-                  alt=""
-                  fill
-                  sizes="46px"
-                  className="object-contain"
-                />
+                <div
+                  ref={chipRef}
+                  className="h-8 w-8 will-change-transform md:h-[42px] md:w-[42px]"
+                >
+                  <Image
+                    src={chip}
+                    alt=""
+                    width={42}
+                    height={42}
+                    sizes="(min-width: 768px) 42px, 32px"
+                    quality={100}
+                    unoptimized
+                    className="block h-full w-full object-contain"
+                  />
+                </div>
               </div>
             </div>
 
@@ -85,4 +98,3 @@ export default function MagnumCTA({
     </div>
   );
 }
-
