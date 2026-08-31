@@ -26,5 +26,7 @@ describe("Final CTA chip motion", () => {
     expect(source).toContain("requestAnimationFrame");
     expect(source).toContain("prefers-reduced-motion: reduce");
     expect(source).not.toMatch(/elastic|bounce|wiggle|rotate\([^)]*180/i);
+    const styles = readFileSync(resolve(process.cwd(), "app/globals.css"), "utf8");
+    expect(styles).not.toContain("final-chip-float");
   });
 });
