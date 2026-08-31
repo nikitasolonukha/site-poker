@@ -1,136 +1,13 @@
-"use client";
-
-import { useEffect, useRef } from "react";
+import { Fragment, type CSSProperties } from "react";
 import Image from "next/image";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { whyFeatures } from "@/data/why";
-
-gsap.registerPlugin(ScrollTrigger);
 
 const cardSurfaceClasses = ["bg-[#11090B]", "bg-[#18090D]", "bg-[#21070F]"];
 
-const stackedStates = [
-  { y: -28, scale: 0.955, rotation: -0.8, opacity: 0.72 },
-  { y: -14, scale: 0.978, rotation: 0.45, opacity: 0.86 },
-];
-
-const THIRD_CARD_ENTRY_DISTANCE = 0.75;
-
 export default function WhyMagnum() {
-  const containerRef = useRef<HTMLElement>(null);
-  const stackRef = useRef<HTMLDivElement>(null);
-  const cardsRef = useRef<(HTMLElement | null)[]>([]);
-  const markerRefs = useRef<(HTMLSpanElement | null)[]>([]);
-
-  useEffect(() => {
-    const media = gsap.matchMedia();
-    const ctx = gsap.context(() => {
-      media.add("(min-width: 768px)", () => {
-        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-        const cards = cardsRef.current.filter(
-          (card): card is HTMLElement => card !== null,
-        );
-        const markers = markerRefs.current.filter(
-          (marker): marker is HTMLSpanElement => marker !== null,
-        );
-        const surfaces = cards.map((card) =>
-          card.querySelector<HTMLElement>("[data-why-card]"),
-        );
-
-        const syncMarkers = () => {
-          cards.forEach((card, index) => {
-            const marker = markers[index];
-            if (!marker) return;
-
-            marker.style.top = `${card.offsetTop}px`;
-          });
-        };
-
-        syncMarkers();
-        ScrollTrigger.addEventListener("refreshInit", syncMarkers);
-
-        surfaces.forEach((surface, index) => {
-          if (!surface) return;
-          gsap.set(cards[index], { zIndex: index + 1 });
-
-          if (index === 0) {
-            gsap.set(surface, { y: 0, scale: 1, rotation: 0, opacity: 1 });
-            return;
-          }
-
-          gsap.set(surface, {
-            y: "52vh",
-            scale: 0.985,
-            rotation: 0,
-            opacity: 1,
-          });
-        });
-
-        const entryTweens: gsap.core.Tween[] = [];
-
-        surfaces.forEach((surface, index) => {
-          if (!surface || index === 0) return;
-
-          const previousSurface = surfaces[index - 1];
-          if (!previousSurface || !markers[index]) return;
-
-          const isThirdCard = index === cards.length - 1;
-          const secondEntryTrigger = entryTweens[index - 1]?.scrollTrigger;
-          const thirdEntryStart = () =>
-            secondEntryTrigger ? secondEntryTrigger.end + 1 : "top 88%";
-          const thirdEntryEnd = () =>
-            secondEntryTrigger
-              ? secondEntryTrigger.end +
-                window.innerHeight * THIRD_CARD_ENTRY_DISTANCE
-              : "top 13%";
-          const entryScrollTrigger = {
-            trigger: markers[index],
-            start: isThirdCard ? thirdEntryStart : "top 88%",
-            end: isThirdCard ? thirdEntryEnd : "top 13%",
-            scrub: 0.65,
-            invalidateOnRefresh: true,
-          };
-
-          const entryTween = gsap.to(surface, {
-            y: 0,
-            scale: 1,
-            rotation: 0,
-            opacity: 1,
-            ease: "none",
-            scrollTrigger: entryScrollTrigger,
-          });
-          entryTweens[index] = entryTween;
-
-          gsap.fromTo(
-            previousSurface,
-            { y: 0, scale: 1, rotation: 0, opacity: 1 },
-            {
-              ...stackedStates[index - 1],
-              ease: "none",
-              immediateRender: false,
-              scrollTrigger: { ...entryScrollTrigger },
-            },
-          );
-        });
-
-        return () => {
-          ScrollTrigger.removeEventListener("refreshInit", syncMarkers);
-        };
-      });
-    }, containerRef);
-
-    return () => {
-      media.revert();
-      ctx.revert();
-    };
-  }, []);
-
   return (
     <section
       id="why"
-      ref={containerRef}
       aria-labelledby="why-title"
       className="relative overflow-x-clip pb-16"
       style={{
@@ -149,36 +26,19 @@ export default function WhyMagnum() {
       </div>
 
       <div
-        ref={stackRef}
-        className="relative z-10 space-y-6 md:space-y-0 md:pb-[26vh]"
+        className="why-stack relative z-10 mx-auto w-[92vw] max-w-[1180px] space-y-6 pb-6 md:w-[calc(100vw-96px)] md:space-y-0 md:pb-0"
+        style={{ "--stack-top": "112px", "--peek": "14px" } as CSSProperties}
       >
         {whyFeatures.map((feature, index) => (
-          <span
-            key={`${feature.id}-scroll-marker`}
-            ref={(element) => {
-              markerRefs.current[index] = element;
-            }}
-            data-why-scroll-marker
-            aria-hidden="true"
-            className="pointer-events-none absolute left-0 top-0 h-px w-px"
-          />
-        ))}
-        {whyFeatures.map((feature, index) => (
-          <article
-            key={feature.id}
-            ref={(element) => {
-              cardsRef.current[index] = element;
-            }}
-            className={[
-              "relative mx-auto flex w-[92vw] min-h-[62svh] flex-col justify-center md:sticky md:top-[13vh] md:w-[82vw] md:min-h-[66svh] md:origin-top",
-              index === whyFeatures.length - 1 ? "md:mb-0" : "md:mb-[18vh]",
-            ].join(" ")}
+          <Fragment key={feature.id}>
+            <article
+              className="why-stack-card relative flex min-h-[62svh] flex-col justify-center md:sticky md:h-[clamp(540px,68svh,680px)] md:min-h-0 md:origin-top md:top-[calc(var(--stack-top)+var(--index)*var(--peek))]"
+            style={{ "--index": index, zIndex: 10 + index * 10 } as CSSProperties}
           >
             <div
-              data-why-card
               className={[
                 cardSurfaceClasses[index] ?? cardSurfaceClasses[0],
-                "flex min-h-[62svh] w-full transform-gpu flex-col gap-8 rounded-[2px] border border-[rgba(241,239,233,0.10)] p-6 will-change-transform motion-reduce:transform-none md:min-h-[66svh] md:flex-row md:gap-12 md:p-10",
+                "flex min-h-[62svh] w-full flex-col gap-8 rounded-[2px] border border-[rgba(241,239,233,0.10)] p-6 md:h-full md:min-h-0 md:flex-row md:gap-12 md:p-10",
               ].join(" ")}
             >
               <div className="order-2 flex w-full flex-col justify-between md:order-1 md:w-[42%]">
@@ -250,8 +110,16 @@ export default function WhyMagnum() {
                 )}
               </div>
             </div>
-          </article>
+            </article>
+            {index < whyFeatures.length - 1 && (
+              <div
+                aria-hidden="true"
+                className="why-stack-reading-space hidden md:block md:h-[82svh]"
+              />
+            )}
+          </Fragment>
         ))}
+        <div aria-hidden="true" className="why-stack-end-space hidden h-[36svh] md:block" />
       </div>
     </section>
   );
