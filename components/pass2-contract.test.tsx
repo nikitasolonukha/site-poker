@@ -256,9 +256,15 @@ describe("PASS 2 visual system contract", () => {
     expect(location).not.toContain("/magnum-card.svg");
     expect(cta).toContain("handleEnter");
     expect(cta).toContain("handleLeave");
-    expect(cta).toContain("x: 32");
-    expect(cta).toContain("rotation: 95");
-    expect(cta).toContain("w-[46px]");
+    expect(cta).toContain('"/chips/magnum-chip-cta.webp"');
+    expect(cta).toContain('sizes="(min-width: 768px) 42px, 32px"');
+    expect(cta).toContain("width={42}");
+    expect(cta).toContain("height={42}");
+    expect(cta).toContain("object-contain");
+    expect(cta).toContain("unoptimized");
+    expect(cta).toContain("x: 3");
+    expect(cta).toContain("rotation: 3");
+    expect(cta).not.toContain("rotation: 95");
   });
 
   it("uses the requested shared conversion destinations", () => {
