@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const componentPath = resolve(process.cwd(), "components/sections/FinalCTAChip.tsx");
+const finalCTAPath = resolve(process.cwd(), "components/sections/FinalCTA.tsx");
 
 describe("Final CTA chip motion", () => {
   it("gives all four rendered chips individually paced visible rocking", () => {
@@ -42,6 +43,9 @@ describe("Final CTA chip motion", () => {
     expect(source).toContain("requestAnimationFrame");
     expect(source).toContain("prefers-reduced-motion: reduce");
     expect(source).not.toMatch(/elastic|bounce|wiggle|rotate\([^)]*180/i);
+    const finalCTA = readFileSync(finalCTAPath, "utf8");
+    expect(finalCTA).toContain("<FinalCTAChip />");
+    expect(finalCTA).not.toContain("final-cta-cards");
     const styles = readFileSync(resolve(process.cwd(), "app/globals.css"), "utf8");
     expect(styles).not.toContain("final-chip-float");
   });
