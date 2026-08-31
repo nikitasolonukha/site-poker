@@ -10,45 +10,86 @@ gsap.registerPlugin(ScrollTrigger);
 
 const cardSurfaceClasses = ["bg-[#11090B]", "bg-[#18090D]", "bg-[#21070F]"];
 
+const stackedStates = [
+  { y: -28, scale: 0.955, rotation: -0.8, opacity: 0.72 },
+  { y: -14, scale: 0.978, rotation: 0.45, opacity: 0.86 },
+];
+
 export default function WhyMagnum() {
   const containerRef = useRef<HTMLElement>(null);
   const cardsRef = useRef<(HTMLElement | null)[]>([]);
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
+    const media = gsap.matchMedia();
     const ctx = gsap.context(() => {
-      cardsRef.current.forEach((card, index) => {
-        if (!card) return;
+      media.add("(min-width: 768px)", () => {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-        const cardSurface = card.querySelector<HTMLElement>("[data-why-card]");
-        if (!cardSurface) return;
+        const cards = cardsRef.current.filter(
+          (card): card is HTMLElement => card !== null,
+        );
+        const surfaces = cards.map((card) =>
+          card.querySelector<HTMLElement>("[data-why-card]"),
+        );
 
-        gsap.set(card, { zIndex: cardsRef.current.length - index });
-        gsap.set(cardSurface, {
-          transformPerspective: 1400,
-          transformOrigin: "left center",
-          transformStyle: "preserve-3d",
+        surfaces.forEach((surface, index) => {
+          if (!surface) return;
+          gsap.set(cards[index], { zIndex: index + 1 });
+
+          if (index === 0) {
+            gsap.set(surface, { y: 0, scale: 1, rotation: 0, opacity: 1 });
+            return;
+          }
+
+          gsap.set(surface, {
+            y: "52vh",
+            scale: 0.985,
+            rotation: 0,
+            opacity: 1,
+          });
         });
 
-        if (index === cardsRef.current.length - 1) return;
+        surfaces.forEach((surface, index) => {
+          if (!surface || index === 0) return;
 
-        gsap.to(cardSurface, {
-          rotationY: -88,
-          opacity: 0.12,
-          ease: "none",
-          scrollTrigger: {
-            trigger: cardsRef.current[index + 1],
-            start: "top 88%",
-            end: "top 18%",
-            scrub: 0.6,
-            invalidateOnRefresh: true,
-          },
+          const previousSurface = surfaces[index - 1];
+          const trigger = cards[index];
+          if (!previousSurface || !trigger) return;
+
+          gsap.to(surface, {
+            y: 0,
+            scale: 1,
+            rotation: 0,
+            opacity: 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger,
+              start: "top 88%",
+              end: "top 13%",
+              scrub: 0.65,
+              invalidateOnRefresh: true,
+            },
+          });
+
+          gsap.to(previousSurface, {
+            ...stackedStates[index - 1],
+            ease: "none",
+            scrollTrigger: {
+              trigger,
+              start: "top 88%",
+              end: "top 13%",
+              scrub: 0.65,
+              invalidateOnRefresh: true,
+            },
+          });
         });
       });
     }, containerRef);
 
-    return () => ctx.revert();
+    return () => {
+      media.revert();
+      ctx.revert();
+    };
   }, []);
 
   return (
@@ -56,13 +97,13 @@ export default function WhyMagnum() {
       id="why"
       ref={containerRef}
       aria-labelledby="why-title"
-      className="relative overflow-hidden pb-28 sm:pb-32"
+      className="relative overflow-hidden pb-16 md:pb-[26vh]"
       style={{
         background:
           "radial-gradient(circle at 72% 25%, rgba(125, 11, 41, 0.22), transparent 38%), linear-gradient(180deg, #08090B 0%, #13070A 48%, #21060C 100%)",
       }}
     >
-      <div className="relative z-10 mx-auto max-w-[1180px] px-4 pb-12 pt-24 sm:px-6 lg:px-8">
+      <div className="relative z-10 mx-auto w-[92vw] max-w-[1600px] pb-12 pt-24 md:w-[82vw]">
         <h2
           id="why-title"
           className="font-display font-bold uppercase text-[#F1EFE9] text-balance"
@@ -72,23 +113,26 @@ export default function WhyMagnum() {
         </h2>
       </div>
 
-      <div className="relative z-10 mx-auto max-w-[1180px] px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 space-y-6 md:space-y-0">
         {whyFeatures.map((feature, index) => (
           <article
             key={feature.id}
             ref={(element) => {
               cardsRef.current[index] = element;
             }}
-            className="sticky top-[12vh] mb-[10vh] flex min-h-[70vh] w-full origin-top flex-col justify-center"
+            className={[
+              "relative mx-auto flex w-[92vw] min-h-[62svh] flex-col justify-center md:sticky md:top-[13vh] md:w-[82vw] md:min-h-[66svh] md:origin-top",
+              index === whyFeatures.length - 1 ? "md:mb-0" : "md:mb-[18vh]",
+            ].join(" ")}
           >
             <div
               data-why-card
               className={[
                 cardSurfaceClasses[index] ?? cardSurfaceClasses[0],
-                "flex min-h-[60vh] w-full transform-gpu flex-col gap-8 rounded-[2px] border border-[rgba(241,239,233,0.10)] p-6 md:flex-row md:gap-12 md:p-10",
+                "flex min-h-[62svh] w-full transform-gpu flex-col gap-8 rounded-[2px] border border-[rgba(241,239,233,0.10)] p-6 will-change-transform motion-reduce:transform-none md:min-h-[66svh] md:flex-row md:gap-12 md:p-10",
               ].join(" ")}
             >
-              <div className="order-2 flex w-full flex-col justify-between md:order-1 md:w-[45%]">
+              <div className="order-2 flex w-full flex-col justify-between md:order-1 md:w-[42%]">
                 <div className="mb-12 flex items-start justify-between">
                   <span className="font-display text-xl font-bold tabular-nums text-[#B22554]">
                     0{index + 1}
@@ -112,7 +156,7 @@ export default function WhyMagnum() {
                 </div>
               </div>
 
-              <div className="relative order-1 aspect-[4/3] w-full overflow-hidden rounded-[2px] border border-[rgba(241,239,233,0.07)] bg-[#08090B] md:order-2 md:aspect-auto md:w-[55%]">
+              <div className="relative order-1 aspect-[4/3] w-full overflow-hidden rounded-[2px] border border-[rgba(241,239,233,0.07)] bg-[#08090B] md:order-2 md:aspect-auto md:w-[58%]">
                 {feature.media === null ? (
                   <div
                     className="absolute inset-0 flex flex-col justify-between p-6 md:p-8"
@@ -127,7 +171,7 @@ export default function WhyMagnum() {
                       aria-hidden="true"
                       fill
                       className="object-cover opacity-[0.06]"
-                      sizes="(max-width: 768px) 100vw, 55vw"
+                      sizes="(max-width: 768px) 92vw, 58vw"
                     />
                     <span className="relative z-10 font-display text-sm font-bold tracking-[0.18em] text-[rgba(241,239,233,0.42)]">
                       MAGNUM
@@ -143,7 +187,7 @@ export default function WhyMagnum() {
                       alt={feature.title}
                       fill
                       className="object-cover contrast-[1.04] saturate-[0.92]"
-                      sizes="(max-width: 768px) 100vw, 55vw"
+                      sizes="(max-width: 768px) 92vw, 58vw"
                     />
                     <div
                       aria-hidden="true"
