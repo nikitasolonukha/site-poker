@@ -97,7 +97,7 @@ export default function WhyMagnum() {
       id="why"
       ref={containerRef}
       aria-labelledby="why-title"
-      className="relative overflow-hidden pb-16 md:pb-[26vh]"
+      className="relative overflow-x-clip pb-16 md:pb-[26vh]"
       style={{
         background:
           "radial-gradient(circle at 72% 25%, rgba(125, 11, 41, 0.22), transparent 38%), linear-gradient(180deg, #08090B 0%, #13070A 48%, #21060C 100%)",
