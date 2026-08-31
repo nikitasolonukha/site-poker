@@ -41,24 +41,27 @@ describe("PASS 2 visual system contract", () => {
     expect(page).toContain("siteConfig.bookingUrl");
   });
 
-  it("keeps Hero layout separate from the 3D chip interaction", () => {
+  it("keeps Hero layout separate from the resilient 3D chip interaction", () => {
     const hero = projectFile("components/sections/Hero.tsx");
 
     expect(hero).toContain("chipPositionRef");
     expect(hero).toContain("MagnumChip3D");
     expect(hero).toContain("ssr: false");
-    expect(hero).not.toContain("/magnum-chip.svg");
-    expect(hero).not.toContain("<img");
+    expect(hero).toContain("/magnum-chip.svg");
+    expect(hero).toContain("chip3DReady");
+    expect(hero).toContain("chip3DError");
     expect(hero).not.toContain("rotateY: -540");
     expect(hero).not.toContain("chipSpinRef");
   });
 
-  it("integrates the licensed 3D MAGNUM Hero chip without a 2D fallback", () => {
+  it("integrates the licensed 3D MAGNUM Hero chip with a safe SVG fallback", () => {
     const chipPath = resolve(process.cwd(), "components/hero/MagnumChip3D.tsx");
     const creditsPath = resolve(process.cwd(), "public/THIRD_PARTY_ASSETS.md");
 
     expect(existsSync(resolve(process.cwd(), "public/models/magnum-chip-base.glb"))).toBe(true);
     expect(existsSync(resolve(process.cwd(), "public/models/magnum-chip.glb"))).toBe(true);
+    expect(existsSync(resolve(process.cwd(), "public/textures/magnum-chip-face.webp"))).toBe(true);
+    expect(existsSync(resolve(process.cwd(), "scripts/build-magnum-chip.py"))).toBe(true);
     expect(existsSync(chipPath)).toBe(true);
     expect(existsSync(creditsPath)).toBe(true);
     if (!existsSync(chipPath) || !existsSync(creditsPath)) return;
@@ -71,7 +74,11 @@ describe("PASS 2 visual system contract", () => {
     expect(chip).toContain("ContactShadows");
     expect(chip).not.toContain("useTexture");
     expect(chip).toContain("dpr={[1, 1.5]}");
-    expect(chip).toContain('frameloop="always"');
+    expect(chip).toContain('frameloop="demand"');
+    expect(chip).toContain("new THREE.Box3()");
+    expect(chip).toContain("getCenter");
+    expect(chip).toContain("ChipSceneErrorBoundary");
+    expect(chip).not.toContain("rotation={[Math.PI / 2, 0, 0]}");
     expect(chip).toContain('dispose={null}');
     expect(chip).toContain("isAnimatingRef");
     expect(chip).toContain("object.castShadow = true");
@@ -80,8 +87,10 @@ describe("PASS 2 visual system contract", () => {
     expect(chip).toContain("<Suspense fallback={null}>");
     expect(chip).toContain("onCreated");
     expect(hero).toContain("MagnumChip3D");
-    expect(hero).toContain("<MagnumChip3D />");
-    expect(hero).not.toContain("isChip3DReady");
+    expect(hero).toContain("<MagnumChip3D");
+    expect(hero).toContain("chip3DReady");
+    expect(hero).toContain("chip3DError");
+    expect(hero).toContain("ChipSvgFallback");
     expect(credits).toContain("Casino Poker Chip");
     expect(credits).toContain("CC BY 4.0");
   });
