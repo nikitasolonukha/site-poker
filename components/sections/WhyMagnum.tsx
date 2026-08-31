@@ -17,7 +17,9 @@ const stackedStates = [
 
 export default function WhyMagnum() {
   const containerRef = useRef<HTMLElement>(null);
+  const stackRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<(HTMLElement | null)[]>([]);
+  const markerRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   useEffect(() => {
     const media = gsap.matchMedia();
@@ -28,9 +30,24 @@ export default function WhyMagnum() {
         const cards = cardsRef.current.filter(
           (card): card is HTMLElement => card !== null,
         );
+        const markers = markerRefs.current.filter(
+          (marker): marker is HTMLSpanElement => marker !== null,
+        );
         const surfaces = cards.map((card) =>
           card.querySelector<HTMLElement>("[data-why-card]"),
         );
+
+        const syncMarkers = () => {
+          cards.forEach((card, index) => {
+            const marker = markers[index];
+            if (!marker) return;
+
+            marker.style.top = `${card.offsetTop}px`;
+          });
+        };
+
+        syncMarkers();
+        ScrollTrigger.addEventListener("refreshInit", syncMarkers);
 
         surfaces.forEach((surface, index) => {
           if (!surface) return;
@@ -53,8 +70,7 @@ export default function WhyMagnum() {
           if (!surface || index === 0) return;
 
           const previousSurface = surfaces[index - 1];
-          const trigger = cards[index];
-          if (!previousSurface || !trigger) return;
+          if (!previousSurface || !markers[index]) return;
 
           gsap.to(surface, {
             y: 0,
@@ -63,7 +79,7 @@ export default function WhyMagnum() {
             opacity: 1,
             ease: "none",
             scrollTrigger: {
-              trigger,
+              trigger: markers[index],
               start: "top 88%",
               end: "top 13%",
               scrub: 0.65,
@@ -75,7 +91,7 @@ export default function WhyMagnum() {
             ...stackedStates[index - 1],
             ease: "none",
             scrollTrigger: {
-              trigger,
+              trigger: markers[index],
               start: "top 88%",
               end: "top 13%",
               scrub: 0.65,
@@ -83,6 +99,10 @@ export default function WhyMagnum() {
             },
           });
         });
+
+        return () => {
+          ScrollTrigger.removeEventListener("refreshInit", syncMarkers);
+        };
       });
     }, containerRef);
 
@@ -113,7 +133,21 @@ export default function WhyMagnum() {
         </h2>
       </div>
 
-      <div className="relative z-10 space-y-6 md:space-y-0 md:pb-[26vh]">
+      <div
+        ref={stackRef}
+        className="relative z-10 space-y-6 md:space-y-0 md:pb-[26vh]"
+      >
+        {whyFeatures.map((feature, index) => (
+          <span
+            key={`${feature.id}-scroll-marker`}
+            ref={(element) => {
+              markerRefs.current[index] = element;
+            }}
+            data-why-scroll-marker
+            aria-hidden="true"
+            className="pointer-events-none absolute left-0 top-0 h-px w-px"
+          />
+        ))}
         {whyFeatures.map((feature, index) => (
           <article
             key={feature.id}
