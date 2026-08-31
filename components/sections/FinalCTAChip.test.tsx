@@ -16,10 +16,16 @@ describe("Final CTA chip motion", () => {
     expect(source).toContain('id: "chip-3"');
     expect(source).toContain('id: "chip-4"');
     expect(source).toContain('src="/chips/magnum-chip-cta.webp"');
-    expect(source).toContain("clipPath: preset.clipPath");
-    expect(source.indexOf("parallaxRefs.current[index] = element")).toBeLessThan(
-      source.indexOf("clipPath: preset.clipPath"),
-    );
+    const chipAssets = [
+      "public/chips/magnum-chip-cta-1.webp",
+      "public/chips/magnum-chip-cta-2.webp",
+      "public/chips/magnum-chip-cta-3.webp",
+      "public/chips/magnum-chip-cta-4.webp",
+    ];
+    expect(chipAssets.every((asset) => existsSync(resolve(process.cwd(), asset)))).toBe(true);
+    expect(source).toContain('src: "/chips/magnum-chip-cta-1.webp"');
+    expect(source).toContain('src: "/chips/magnum-chip-cta-4.webp"');
+    expect(source).not.toContain("clipPath");
     expect(source).toContain("cycleDuration: 8.8");
     expect(source).toContain("cycleDuration: 7.6");
     expect(source).toContain("cycleDuration: 7");
