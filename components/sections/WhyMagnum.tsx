@@ -15,7 +15,7 @@ const stackedStates = [
   { y: -14, scale: 0.978, rotation: 0.45, opacity: 0.86 },
 ];
 
-const THIRD_CARD_ENTRY_DELAY = 0.18;
+const THIRD_CARD_ENTRY_DISTANCE = 0.75;
 
 export default function WhyMagnum() {
   const containerRef = useRef<HTMLElement>(null);
@@ -44,11 +44,7 @@ export default function WhyMagnum() {
             const marker = markers[index];
             if (!marker) return;
 
-            const entryDelay =
-              index === cards.length - 1
-                ? window.innerHeight * THIRD_CARD_ENTRY_DELAY
-                : 0;
-            marker.style.top = `${card.offsetTop + entryDelay}px`;
+            marker.style.top = `${card.offsetTop}px`;
           });
         };
 
@@ -72,38 +68,51 @@ export default function WhyMagnum() {
           });
         });
 
+        const entryTweens: gsap.core.Tween[] = [];
+
         surfaces.forEach((surface, index) => {
           if (!surface || index === 0) return;
 
           const previousSurface = surfaces[index - 1];
           if (!previousSurface || !markers[index]) return;
 
-          gsap.to(surface, {
+          const isThirdCard = index === cards.length - 1;
+          const secondEntryTrigger = entryTweens[index - 1]?.scrollTrigger;
+          const thirdEntryStart = () =>
+            secondEntryTrigger ? secondEntryTrigger.end + 1 : "top 88%";
+          const thirdEntryEnd = () =>
+            secondEntryTrigger
+              ? secondEntryTrigger.end +
+                window.innerHeight * THIRD_CARD_ENTRY_DISTANCE
+              : "top 13%";
+          const entryScrollTrigger = {
+            trigger: markers[index],
+            start: isThirdCard ? thirdEntryStart : "top 88%",
+            end: isThirdCard ? thirdEntryEnd : "top 13%",
+            scrub: 0.65,
+            invalidateOnRefresh: true,
+          };
+
+          const entryTween = gsap.to(surface, {
             y: 0,
             scale: 1,
             rotation: 0,
             opacity: 1,
             ease: "none",
-            scrollTrigger: {
-              trigger: markers[index],
-              start: "top 88%",
-              end: "top 13%",
-              scrub: 0.65,
-              invalidateOnRefresh: true,
-            },
+            scrollTrigger: entryScrollTrigger,
           });
+          entryTweens[index] = entryTween;
 
-          gsap.to(previousSurface, {
-            ...stackedStates[index - 1],
-            ease: "none",
-            scrollTrigger: {
-              trigger: markers[index],
-              start: "top 88%",
-              end: "top 13%",
-              scrub: 0.65,
-              invalidateOnRefresh: true,
+          gsap.fromTo(
+            previousSurface,
+            { y: 0, scale: 1, rotation: 0, opacity: 1 },
+            {
+              ...stackedStates[index - 1],
+              ease: "none",
+              immediateRender: false,
+              scrollTrigger: { ...entryScrollTrigger },
             },
-          });
+          );
         });
 
         return () => {

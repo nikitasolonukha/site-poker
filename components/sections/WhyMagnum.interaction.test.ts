@@ -10,7 +10,7 @@ describe("Why Magnum stacked scroll", () => {
     const why = source();
 
     expect(why).toContain("data-why-scroll-marker");
-    expect(why).toContain("card.offsetTop + entryDelay");
+    expect(why).toContain("marker.style.top = `${card.offsetTop}px`");
     expect(why).toContain("trigger: markers[index]");
     expect(why).toContain('ScrollTrigger.addEventListener("refreshInit", syncMarkers)');
   });
@@ -21,5 +21,6 @@ describe("Why Magnum stacked scroll", () => {
     expect(why).toContain("const secondEntryTrigger = entryTweens[index - 1]?.scrollTrigger");
     expect(why).toContain("secondEntryTrigger.end + 1");
     expect(why).toContain("window.innerHeight * THIRD_CARD_ENTRY_DISTANCE");
+    expect(why).toContain("gsap.fromTo(");
   });
 });
