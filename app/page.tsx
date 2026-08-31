@@ -18,21 +18,21 @@ export default function Home() {
       <Header />
       <main>
         <Hero />
-        <ChipDivider value="100" angle={-2.4} chipSide="right" />
+        <ChipDivider value="500" surface="wine" chipSide="right" />
         <About />
-        <ChipDivider value="500" direction="reverse" angle={2.2} chipSide="left" />
+        <ChipDivider value="100" surface="dark" direction="reverse" chipSide="left" />
         
         <MagnumCTA 
           title="ЕСТЬ ВОПРОС?"
           label="НАПИСАТЬ В TELEGRAM"
           href="https://t.me/MAGNUM_POKER"
         />
-        <ChipDivider value="1K" angle={-1.8} chipSide="right" />
+        <ChipDivider value="1K" surface="wine" chipSide="right" />
         
         <WhyMagnum />
-        <ChipDivider value="5K" direction="reverse" angle={2.6} chipSide="left" />
+        <ChipDivider value="5K" surface="paper" direction="reverse" chipSide="left" />
         <GameFormats />
-        <ChipDivider value="25K" angle={-2.1} chipSide="right" />
+        <ChipDivider value="25K" surface="wine" chipSide="right" />
         
         <MagnumCTA 
           title="ГОТОВЫ СЕСТЬ ЗА СТОЛ?"
@@ -41,10 +41,10 @@ export default function Home() {
         />
 
         <Gallery />
-        <ChipDivider value="100K" direction="reverse" angle={2.3} chipSide="left" />
+        <ChipDivider value="100K" surface="dark" direction="reverse" chipSide="left" />
         <Reviews />
         <Location />
-        <ChipDivider value="BOUNTY" angle={-2.5} chipSide="right" />
+        <ChipDivider value="BOUNTY" surface="wine" chipSide="right" />
         
         <MagnumCTA 
           title="ОСТАЛИСЬ СОМНЕНИЯ?"

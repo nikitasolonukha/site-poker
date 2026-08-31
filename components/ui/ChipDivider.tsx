@@ -1,5 +1,4 @@
 import Image from "next/image";
-import type { CSSProperties } from "react";
 import PokerChip, { chipTones, type ChipTone, type ChipValue } from "./PokerChip";
 
 const railAssets: Record<ChipValue, string> = {
@@ -17,7 +16,7 @@ type ChipDividerProps = {
   tone?: ChipTone;
   direction?: "forward" | "reverse";
   chipSide?: "left" | "right";
-  angle?: number;
+  surface?: "dark" | "paper" | "wine";
 };
 
 export default function ChipDivider({
@@ -25,7 +24,7 @@ export default function ChipDivider({
   tone = chipTones[value],
   direction = "forward",
   chipSide = "right",
-  angle = -2,
+  surface = "dark",
 }: ChipDividerProps) {
   const railAsset = railAssets[value];
 
@@ -34,8 +33,10 @@ export default function ChipDivider({
       aria-hidden="true"
       className="chip-divider"
       data-testid="chip-divider"
+      data-alignment="straight"
+      data-emphasis="subtle"
+      data-surface={surface}
       data-tone={tone}
-      style={{ "--chip-divider-angle": `${angle}deg` } as CSSProperties}
     >
       <div className="chip-divider__rail">
         <div className="chip-divider__track" data-direction={direction} data-testid="chip-divider-track">
@@ -60,7 +61,7 @@ export default function ChipDivider({
       </div>
 
       <div className={`chip-divider__chip chip-divider__chip--${chipSide}`}>
-        <PokerChip value={value} tone={tone} decorative size="clamp(92px, 11vw, 158px)" />
+        <PokerChip value={value} tone={tone} decorative size="clamp(64px, 7vw, 96px)" />
       </div>
     </div>
   );

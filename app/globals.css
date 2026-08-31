@@ -63,11 +63,10 @@ body {
 }
 
 .chip-divider {
-  --chip-divider-angle: -2deg;
   position: relative;
-  z-index: 35;
-  height: clamp(118px, 13vw, 188px);
-  margin-block: clamp(-34px, -2.4vw, -18px);
+  z-index: 5;
+  height: clamp(76px, 8vw, 108px);
+  margin-block: clamp(-16px, -1.2vw, -8px);
   overflow: hidden;
   pointer-events: none;
   isolation: isolate;
@@ -76,30 +75,34 @@ body {
 .chip-divider::before {
   content: "";
   position: absolute;
-  inset: 50% -8vw auto;
-  height: clamp(46px, 4vw, 62px);
-  transform: translateY(-50%) rotate(var(--chip-divider-angle));
+  inset: 50% -4vw auto;
+  height: clamp(26px, 2.4vw, 38px);
+  transform: translateY(-50%);
   background: rgba(8, 9, 11, 0.38);
-  filter: blur(18px);
-  opacity: 0.45;
+  filter: blur(16px);
+  opacity: 0.18;
 }
+
+.chip-divider[data-surface="paper"]::before { background: rgba(236, 232, 226, 0.52); }
+.chip-divider[data-surface="wine"]::before { background: rgba(33, 6, 12, 0.5); }
 
 .chip-divider__rail {
   position: absolute;
   top: 50%;
-  left: -10vw;
-  width: 120vw;
+  left: -7vw;
+  width: 114vw;
   overflow: hidden;
-  transform: translateY(-50%) rotate(var(--chip-divider-angle));
-  transform-origin: center;
-  filter: drop-shadow(0 12px 20px rgba(0, 0, 0, 0.24));
+  transform: translateY(-50%);
+  filter: drop-shadow(0 5px 9px rgba(0, 0, 0, 0.15));
+  opacity: 0.4;
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
 }
 
 .chip-divider__track {
   display: flex;
   width: max-content;
   will-change: transform;
-  animation: magnum-rail-slide 24s linear infinite;
+  animation: magnum-rail-slide 34s linear infinite;
 }
 
 .chip-divider__track[data-direction="reverse"] {
@@ -110,31 +113,49 @@ body {
   position: relative;
   display: block;
   flex: 0 0 auto;
-  width: max(1180px, 145vw);
+  width: max(960px, 118vw);
   aspect-ratio: 2107 / 55;
 }
 
 .chip-divider__rail-image {
   object-fit: fill;
   user-select: none;
+  filter: saturate(0.62) brightness(0.82);
 }
+
+.chip-divider[data-surface="paper"] .chip-divider__rail { opacity: 0.28; }
+.chip-divider[data-surface="paper"] .chip-divider__rail-image {
+  filter: saturate(0.46) brightness(0.9);
+  mix-blend-mode: multiply;
+}
+.chip-divider[data-surface="wine"] .chip-divider__rail { opacity: 0.34; }
+.chip-divider[data-surface="wine"] .chip-divider__rail-image {
+  filter: saturate(0.52) brightness(0.76);
+}
+.chip-divider[data-tone="yellow"] .chip-divider__rail,
+.chip-divider[data-tone="violet"] .chip-divider__rail,
+.chip-divider[data-tone="pink"] .chip-divider__rail { opacity: 0.27; }
 
 .chip-divider__chip {
   position: absolute;
   top: 50%;
   z-index: 2;
-  width: clamp(92px, 11vw, 158px);
-  height: clamp(92px, 11vw, 158px);
+  width: clamp(64px, 7vw, 96px);
+  height: clamp(64px, 7vw, 96px);
   transform: translateY(-50%);
-  filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.42));
+  filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.24));
+  opacity: 0.66;
 }
 
 .chip-divider__chip .poker-chip {
-  animation: magnum-chip-spin 18s linear infinite;
+  animation: magnum-chip-spin 30s linear infinite;
 }
 
-.chip-divider__chip--left { left: clamp(14px, 5vw, 76px); }
-.chip-divider__chip--right { right: clamp(14px, 5vw, 76px); }
+.chip-divider__chip .poker-chip__image { filter: saturate(0.72) brightness(0.9); }
+.chip-divider[data-surface="paper"] .chip-divider__chip { opacity: 0.54; }
+.chip-divider[data-surface="wine"] .chip-divider__chip { opacity: 0.6; }
+.chip-divider__chip--left { left: clamp(18px, 6vw, 92px); }
+.chip-divider__chip--right { right: clamp(18px, 6vw, 92px); }
 
 @keyframes magnum-rail-slide {
   from { transform: translate3d(0, 0, 0); }
@@ -153,6 +174,6 @@ body {
 }
 
 @media (max-width: 640px) {
-  .chip-divider { height: 112px; margin-block: -22px; }
-  .chip-divider__rail { left: -22vw; width: 144vw; }
+  .chip-divider { height: 72px; margin-block: -10px; }
+  .chip-divider__rail { left: -16vw; width: 132vw; }
 }
