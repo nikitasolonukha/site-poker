@@ -127,7 +127,7 @@ describe("PASS 2 visual system contract", () => {
   });
 
 
-  it("uses the dark vertical stacked-scroll system for Why Magnum", () => {
+  it("uses the dark vertical CSS sticky stack for Why Magnum", () => {
     const why = projectFile("components/sections/WhyMagnum.tsx");
 
     expect(why).not.toContain("magnum-paper");
@@ -139,22 +139,18 @@ describe("PASS 2 visual system contract", () => {
     expect(why).toContain("bg-[#18090D]");
     expect(why).toContain("bg-[#21070F]");
     expect(why).toContain("relative overflow-x-clip pb-16");
-    expect(why).toContain("relative z-10 space-y-6 md:space-y-0 md:pb-[26vh]");
+    expect(why).toContain("why-stack relative");
+    expect(why).toContain("why-stack-card");
     expect(why).toContain("md:sticky");
-    expect(why).toContain("md:top-[13vh]");
-    expect(why).toContain("md:w-[82vw]");
-    expect(why).toContain("md:min-h-[66svh]");
-    expect(why).toContain("md:pb-[26vh]");
-    expect(why).toContain('y: "52vh"');
-    expect(why).toContain("scale: 0.985");
-    expect(why).toContain("rotation: -0.8");
-    expect(why).toContain("scale: 0.955");
-    expect(why).toContain("opacity: 0.72");
-    expect(why).toContain("scale: 0.978");
-    expect(why).toContain("opacity: 0.86");
-    expect(why).toContain("scrub: 0.65");
-    expect(why).not.toContain("rotationY");
-    expect(why).not.toContain("transformPerspective");
+    expect(why).toContain("md:top-[calc(var(--stack-top)+var(--index)*var(--peek))]");
+    expect(why).toContain('"--stack-top": "112px"');
+    expect(why).toContain('"--peek": "14px"');
+    expect(why).toContain("why-stack-reading-space hidden md:block md:h-[82svh]");
+    expect(why).toContain("why-stack-end-space hidden h-[36svh] md:block");
+    expect(why).not.toContain("gsap");
+    expect(why).not.toContain("ScrollTrigger");
+    expect(why).not.toContain('y: "52vh"');
+    expect(why).not.toContain("scrub: 0.65");
     expect(why).not.toContain("pin: true");
   });
   it("renders Formats as click-selected 3D playing cards without auto switch", () => {
