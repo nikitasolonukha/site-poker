@@ -12,7 +12,7 @@ type ChipPreset = {
   rotateZ: number;
   rotateX: number;
   rotateY: number;
-  duration: number;
+  cycleDuration: number;
   delay: number;
   parallax: number;
   tilt: number;
@@ -27,7 +27,7 @@ const chipPresets: ChipPreset[] = [
     rotateZ: 1.5,
     rotateX: 1,
     rotateY: -1.3,
-    duration: 8.8,
+    cycleDuration: 8.8,
     delay: 0.6,
     parallax: 6,
     tilt: 1.2,
@@ -40,7 +40,7 @@ const chipPresets: ChipPreset[] = [
     rotateZ: -2.4,
     rotateX: -1.5,
     rotateY: 2,
-    duration: 7.6,
+    cycleDuration: 7.6,
     delay: 1.3,
     parallax: 8,
     tilt: 1.8,
@@ -53,7 +53,7 @@ const chipPresets: ChipPreset[] = [
     rotateZ: 2.8,
     rotateX: 1.8,
     rotateY: -2.5,
-    duration: 7,
+    cycleDuration: 7,
     delay: 0.15,
     parallax: 10,
     tilt: 2.4,
@@ -66,7 +66,7 @@ const chipPresets: ChipPreset[] = [
     rotateZ: -1.3,
     rotateX: -1,
     rotateY: 1.2,
-    duration: 9.8,
+    cycleDuration: 9.8,
     delay: 1.8,
     parallax: 14,
     tilt: 3,
@@ -96,7 +96,7 @@ export default function FinalCTAChip() {
         rotation: preset.rotateZ,
         rotationX: preset.rotateX,
         rotationY: preset.rotateY,
-        duration: preset.duration,
+        duration: preset.cycleDuration / 2,
         delay: preset.delay,
         ease: "sine.inOut",
         yoyo: true,
