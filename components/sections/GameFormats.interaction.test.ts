@@ -26,8 +26,8 @@ const loadPresentation = async () => {
   if (!existsSync(helperPath)) return undefined;
 
   const modulePath = "./gameFormatsInteraction";
-  const module = await import(/* @vite-ignore */ modulePath);
-  return (module as unknown as {
+  const interactionModule = await import(/* @vite-ignore */ modulePath);
+  return (interactionModule as unknown as {
     getCardPresentation?: GetCardPresentation;
   }).getCardPresentation;
 };
