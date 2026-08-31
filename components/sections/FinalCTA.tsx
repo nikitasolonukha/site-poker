@@ -1,5 +1,6 @@
 import { siteConfig } from "@/config/site";
 import Image from "next/image";
+import FinalCTAChip from "./FinalCTAChip";
 
 export default function FinalCTA() {
   return (
@@ -48,13 +49,7 @@ export default function FinalCTA() {
 
       {/* Decorative Chip - 30% visible from bottom */}
       <div className="final-cta-chip absolute left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-[15%] bottom-[-20vw] md:bottom-[-250px] w-[80vw] md:w-[600px] aspect-square pointer-events-none z-30">
-        <Image
-          src="/magnum-chip.svg"
-          alt=""
-          fill
-          className="object-contain drop-shadow-[0_40px_80px_rgba(0,0,0,0.5)]"
-          sizes="(max-width: 768px) 80vw, 600px"
-        />
+        <FinalCTAChip />
       </div>
     </section>
   );
