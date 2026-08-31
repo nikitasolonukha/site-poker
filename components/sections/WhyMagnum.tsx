@@ -20,7 +20,49 @@ export default function WhyMagnum() {
 
     const ctx = gsap.context(() => {
       cardsRef.current.forEach((card, index) => {
-        if (!card || index === cardsRef.current.length - 1) return;
+        if (!card) return;
+
+        const cardSurface = card.querySelector<HTMLElement>("[data-why-card]");
+        const cardMedia = card.querySelector<HTMLElement>("[data-why-media]");
+
+        if (cardSurface) {
+          gsap.fromTo(
+            cardSurface,
+            { autoAlpha: 0, y: 48, scale: 0.975 },
+            {
+              autoAlpha: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.8,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: card,
+                start: "top 82%",
+                toggleActions: "play none none reverse",
+              },
+            },
+          );
+        }
+
+        if (cardMedia) {
+          gsap.fromTo(
+            cardMedia,
+            { autoAlpha: 0, scale: 1.06 },
+            {
+              autoAlpha: 1,
+              scale: 1,
+              duration: 0.9,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: card,
+                start: "top 78%",
+                toggleActions: "play none none reverse",
+              },
+            },
+          );
+        }
+
+        if (index === cardsRef.current.length - 1) return;
 
         gsap.to(card, {
           scale: 0.97,
@@ -72,6 +114,7 @@ export default function WhyMagnum() {
             className="sticky top-[12vh] mb-[10vh] flex min-h-[70vh] w-full origin-top flex-col justify-center"
           >
             <div
+              data-why-card
               className={[
                 cardSurfaceClasses[index] ?? cardSurfaceClasses[0],
                 "flex min-h-[60vh] w-full transform-gpu flex-col gap-8 rounded-[2px] border border-[rgba(241,239,233,0.10)] p-6 md:flex-row md:gap-12 md:p-10",
@@ -101,7 +144,7 @@ export default function WhyMagnum() {
                 </div>
               </div>
 
-              <div className="relative order-1 aspect-[4/3] w-full overflow-hidden rounded-[2px] border border-[rgba(241,239,233,0.07)] bg-[#08090B] md:order-2 md:aspect-auto md:w-[55%]">
+              <div data-why-media className="relative order-1 aspect-[4/3] w-full overflow-hidden rounded-[2px] border border-[rgba(241,239,233,0.07)] bg-[#08090B] md:order-2 md:aspect-auto md:w-[55%]">
                 {feature.media === null ? (
                   <div
                     className="absolute inset-0 flex flex-col justify-between p-6 md:p-8"
