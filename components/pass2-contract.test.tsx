@@ -52,13 +52,13 @@ describe("PASS 2 visual system contract", () => {
     expect(hero).toContain("prefers-reduced-motion");
   });
 
-  it("keeps About video visible inside a non-pinned sticky scene", () => {
+  it("keeps the original pinned About video treatment", () => {
     const about = projectFile("components/sections/About.tsx");
 
-    expect(about).not.toMatch(/pin:\s*true/);
-    expect(about).toContain("sticky-about");
-    expect(about).toContain("gsap.matchMedia()");
-    expect(about).toContain('poster="/gallery/image-3.webp"');
+    expect(about).toMatch(/pin:\s*true/);
+    expect(about).not.toContain("sticky-about");
+    expect(about).toContain("video-mobile-fallback");
+    expect(about).toContain('end: "+=120%"');
   });
 
   it("uses only confirmed Why Magnum media", () => {
