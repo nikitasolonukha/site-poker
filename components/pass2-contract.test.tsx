@@ -41,17 +41,50 @@ describe("PASS 2 visual system contract", () => {
     expect(page).toContain("siteConfig.bookingUrl");
   });
 
-  it("separates Hero scroll and interactive transforms", () => {
+  it("keeps Hero layout separate from the 3D chip interaction", () => {
     const hero = projectFile("components/sections/Hero.tsx");
 
-    expect(hero).toContain("chipScrollRef");
-    expect(hero).toContain("chipInteractiveRef");
-    expect(hero).toContain("handleChipClick");
-    expect(hero).toContain("chip-face--front");
-    expect(hero).toContain("chip-face--back");
-    expect(hero).toContain("prefers-reduced-motion");
+    expect(hero).toContain("chipPositionRef");
+    expect(hero).toContain("MagnumChip3D");
+    expect(hero).toContain("ssr: false");
+    expect(hero).not.toContain("/magnum-chip.svg");
+    expect(hero).not.toContain("<img");
+    expect(hero).not.toContain("rotateY: -540");
+    expect(hero).not.toContain("chipSpinRef");
   });
 
+  it("integrates the licensed 3D MAGNUM Hero chip without a 2D fallback", () => {
+    const chipPath = resolve(process.cwd(), "components/hero/MagnumChip3D.tsx");
+    const creditsPath = resolve(process.cwd(), "public/THIRD_PARTY_ASSETS.md");
+
+    expect(existsSync(resolve(process.cwd(), "public/models/magnum-chip-base.glb"))).toBe(true);
+    expect(existsSync(resolve(process.cwd(), "public/models/magnum-chip.glb"))).toBe(true);
+    expect(existsSync(chipPath)).toBe(true);
+    expect(existsSync(creditsPath)).toBe(true);
+    if (!existsSync(chipPath) || !existsSync(creditsPath)) return;
+
+    const chip = readFileSync(chipPath, "utf8");
+    const hero = projectFile("components/sections/Hero.tsx");
+    const credits = readFileSync(creditsPath, "utf8");
+
+    expect(chip).toContain('useGLTF("/models/magnum-chip.glb")');
+    expect(chip).toContain("ContactShadows");
+    expect(chip).not.toContain("useTexture");
+    expect(chip).toContain("dpr={[1, 1.5]}");
+    expect(chip).toContain('frameloop="always"');
+    expect(chip).toContain('dispose={null}');
+    expect(chip).toContain("isAnimatingRef");
+    expect(chip).toContain("object.castShadow = true");
+    expect(chip).not.toContain("object.material = new THREE.MeshStandardMaterial");
+    expect(chip).toContain("hasPaintedRef");
+    expect(chip).toContain("<Suspense fallback={null}>");
+    expect(chip).toContain("onCreated");
+    expect(hero).toContain("MagnumChip3D");
+    expect(hero).toContain("<MagnumChip3D />");
+    expect(hero).not.toContain("isChip3DReady");
+    expect(credits).toContain("Casino Poker Chip");
+    expect(credits).toContain("CC BY 4.0");
+  });
   it("keeps the original pinned About video treatment", () => {
     const about = projectFile("components/sections/About.tsx");
 
@@ -61,13 +94,19 @@ describe("PASS 2 visual system contract", () => {
     expect(about).toContain('end: "+=120%"');
   });
 
-  it("uses only confirmed Why Magnum media", () => {
-    expect(whyFeatures.every((feature) => feature.media === null)).toBe(true);
+  it("uses the supplied Why MAGNUM media", () => {
+    expect(whyFeatures.map((feature) => feature.media)).toEqual([
+      "/why/building.webp",
+      "/why/parking.png",
+      "/why/food-court.png",
+    ]);
+
+    for (const feature of whyFeatures) {
+      expect(existsSync(resolve(process.cwd(), "public", feature.media!.slice(1)))).toBe(true);
+    }
 
     const why = projectFile("components/sections/WhyMagnum.tsx");
-    expect(why).toContain("feature.media === null");
-    expect(why).toContain("MAGNUM");
-    expect(why).not.toContain("rounded-full");
+    expect(why).toContain("src={feature.media}");
   });
 
   it("renders Formats as click-selected 3D playing cards without auto switch", () => {
@@ -89,11 +128,24 @@ describe("PASS 2 visual system contract", () => {
     expect(gallerySource).toContain("gallery-sticky");
     expect(gallerySource).toContain("gsap.matchMedia()");
     expect(gallerySource).toContain("invalidateOnRefresh: true");
+    expect(gallerySource).toContain("md:h-[calc(100svh-280px)]");
+    expect(gallerySource).toContain("const revealTimeline");
+    expect(gallerySource).toContain("clipPath: \"inset(20% 16% 20% 16%)\"");
+    expect(gallerySource).toContain("stagger: 0.08");
+    expect(gallerySource).toContain('end: "bottom bottom"');
     expect(gallery).toHaveLength(8);
     expect(new Set(gallery.map((item) => item.src)).size).toBe(8);
     expect(gallery.every((item) => item.caption.includes("/ 08"))).toBe(true);
   });
 
+  it("places the supplied card-group illustration beside the final CTA", () => {
+    const finalCta = projectFile("components/sections/FinalCTA.tsx");
+
+    expect(existsSync(resolve(process.cwd(), "public/final-cta-cards.svg"))).toBe(true);
+    expect(finalCta).toContain("/final-cta-cards.svg");
+    expect(finalCta).toContain("final-cta-cards");
+    expect(finalCta).toContain("md:right-[7%]");
+  });
   it("removes the map overlay and keeps CTA chip motion restrained", () => {
     const location = projectFile("components/sections/Location.tsx");
     const cta = projectFile("components/ui/MagnumCTA.tsx");

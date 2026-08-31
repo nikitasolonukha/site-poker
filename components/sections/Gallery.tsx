@@ -8,96 +8,107 @@ import { gallery } from "@/data/gallery";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const deckX = [0, -10, 14, -18, 20, -5, 11, -14];
-const deckY = [0, 7, -5, 10, -8, 3, -11, 6];
-const deckRotation = [-5, 3, -2, 6, -4, 2, -3, 4];
-const deckScale = [0.88, 0.84, 0.86, 0.82, 0.87, 0.85, 0.83, 0.88];
-const scatterX = [-180, -90, 40, 150, -140, 95, -35, 175];
-const scatterY = [-90, 70, -120, 25, 115, -55, 90, -105];
+const deckX = [-20, 14, -8, 24, -14, 6, 2, -10];
+const deckY = [18, -10, 26, 8, -14, 20, 12, -6];
+const deckRotation = [-6, 4, -2, 7, -5, 3, -1, 5];
+const deckScale = [0.86, 0.9, 0.87, 0.92, 0.88, 0.94, 0.9, 0.89];
+const scatterX = [-46, 30, -18, 44, -24, 16, 34, 18];
+const scatterY = [30, -6, 38, 16, -22, 8, 24, -14];
+const scatterRotation = [-4, 3, -5, 9, -3, 4, 6, -2];
 
 export default function Gallery() {
   const sectionRef = useRef<HTMLElement>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
   const imagesRef = useRef<(HTMLDivElement | null)[]>([]);
   const loadedImagesRef = useRef(0);
 
   useEffect(() => {
     const mm = gsap.matchMedia();
     const ctx = gsap.context(() => {
-      mm.add(
-        "(min-width: 768px) and (prefers-reduced-motion: no-preference)",
-        () => {
-          const items = imagesRef.current.filter(Boolean) as HTMLDivElement[];
-          if (!gridRef.current || items.length === 0) return;
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        const items = imagesRef.current.filter(Boolean) as HTMLDivElement[];
+        if (!sectionRef.current || items.length === 0) return;
 
-          const deckPosition = (item: HTMLDivElement, index: number) => {
-            const rect = item.getBoundingClientRect();
-            const targetX = window.innerWidth - window.innerWidth * 0.08 - rect.width / 2;
-            const targetY = window.innerHeight - window.innerHeight * 0.08 - rect.height / 2;
-            return {
-              x: targetX - (rect.left + rect.width / 2) + deckX[index],
-              y: targetY - (rect.top + rect.height / 2) + deckY[index],
-            };
-          };
-
-          items.forEach((item, index) => {
-            const position = deckPosition(item, index);
-            gsap.set(item, {
-              x: position.x,
-              y: position.y,
-              rotation: deckRotation[index],
-              scale: deckScale[index],
-              opacity: 0.88,
-              zIndex: gallery.length - index,
-              transformOrigin: "center",
-            });
+        items.forEach((item, index) => {
+          const i = Math.min(index, deckX.length - 1);
+          gsap.set(item, {
+            x: deckX[i],
+            y: deckY[i],
+            rotation: deckRotation[i],
+            scale: deckScale[i],
+            opacity: 0.16,
+            clipPath: "inset(20% 16% 20% 16%)",
+            transformOrigin: "center",
+            zIndex: gallery.length - index,
           });
+        });
 
-          const timeline = gsap.timeline({
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: "top top",
-              end: "bottom bottom",
-              scrub: 0.75,
-              invalidateOnRefresh: true,
-            },
-          });
+        const revealTimeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 75%",
+            end: "top 38%",
+            scrub: 0.55,
+            invalidateOnRefresh: true,
+          },
+        });
 
-          items.forEach((item, index) => {
-            const position = deckPosition(item, index);
-            timeline
-              .to(
-                item,
-                {
-                  x: position.x * 0.42 + scatterX[index],
-                  y: position.y * 0.38 + scatterY[index],
-                  rotation: deckRotation[index] * 0.45,
-                  scale: 0.92,
-                  opacity: 0.94,
-                  ease: "power1.inOut",
-                  duration: 0.4,
-                },
-                0,
-              )
-              .to(
-                item,
-                {
-                  x: 0,
-                  y: 0,
-                  rotation: 0,
-                  scale: 1,
-                  opacity: 1,
-                  zIndex: 1,
-                  ease: "power2.inOut",
-                  duration: 0.6,
-                },
-                0.4,
-              );
-          });
+        revealTimeline.to(items, {
+          opacity: 0.92,
+          clipPath: "inset(0% 0% 0% 0%)",
+          duration: 0.58,
+          stagger: 0.08,
+          ease: "power2.out",
+        });
 
-          return () => timeline.kill();
-        },
-      );
+        const scrub = 0.72;
+        const timeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top top",
+            end: "bottom bottom",
+            scrub,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        items.forEach((item, index) => {
+          const i = Math.min(index, deckX.length - 1);
+          timeline
+            .to(
+              item,
+              {
+                x: scatterX[i],
+                y: scatterY[i],
+                rotation: scatterRotation[i],
+                scale: 0.92,
+                opacity: 0.96,
+                zIndex: 10,
+                ease: "power2.out",
+                duration: 0.45,
+              },
+              0,
+            )
+            .to(
+              item,
+              {
+                x: 0,
+                y: 0,
+                rotation: 0,
+                scale: 1,
+                opacity: 1,
+                zIndex: 1,
+                ease: "power2.inOut",
+                duration: 0.55,
+              },
+              0.45,
+            );
+        });
+
+        return () => {
+          revealTimeline.kill();
+          timeline.kill();
+        };
+      });
     }, sectionRef);
 
     return () => {
@@ -129,11 +140,8 @@ export default function Gallery() {
           </span>
         </div>
 
-        <div className="relative mx-auto w-full max-w-[1440px] px-4 pb-16 pt-12 sm:px-6 lg:px-12 md:absolute md:inset-x-0 md:bottom-8 md:top-[180px] md:p-0 md:px-12">
-          <div
-            ref={gridRef}
-            className="grid grid-cols-1 gap-4 md:h-full md:grid-cols-4 md:grid-rows-2 md:gap-5"
-          >
+        <div className="relative mx-auto w-full max-w-[1440px] px-4 pb-16 pt-[140px] sm:px-6 lg:px-12 md:absolute md:inset-x-0 md:top-[180px] md:h-[calc(100svh-280px)] md:p-0 md:px-12">
+          <div className="grid grid-cols-1 gap-4 md:h-full md:grid-cols-4 md:grid-rows-2 md:gap-5">
             {gallery.map((item, index) => (
               <div
                 key={item.id}
@@ -164,4 +172,3 @@ export default function Gallery() {
     </section>
   );
 }
-

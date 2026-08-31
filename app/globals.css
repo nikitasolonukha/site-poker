@@ -156,28 +156,14 @@ body {
   }
 }
 
-.hero-chip-interactive {
+.chip-tilt,
+.chip-spin {
   transform-style: preserve-3d;
-  filter: drop-shadow(0 28px 52px rgba(0, 0, 0, 0.4));
-  outline: none;
+  transform-origin: 50% 50%;
 }
 
-.hero-chip-interactive:focus-visible {
-  border-radius: 50%;
-  box-shadow: 0 0 0 2px rgba(241, 239, 233, 0.7);
-}
-
-.chip-face {
-  position: absolute;
-  inset: 0;
-  display: block;
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-
-.chip-face--back {
-  transform: rotateY(180deg);
+.chip-spin {
+  will-change: transform;
 }
 
 section[id] {
