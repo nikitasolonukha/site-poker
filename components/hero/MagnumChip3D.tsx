@@ -10,10 +10,14 @@ import {
   type ReactNode,
 } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { ContactShadows, Environment, useGLTF } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 
-const BASE_ROTATION = new THREE.Euler(0.08, -0.16, -0.04);
+/**
+ * Approved hero pose from the Blender "MAGNUM Hero Chip Turntable" scene.
+ * The chip faces the text on the left. Do not change without a new visual reference.
+ */
+const BASE_ROTATION = new THREE.Euler(0.7, -0.42, -0.04);
 const NORMALIZED_DIAMETER = 1.82;
 const FLIP_DURATION = 1.2;
 
@@ -169,25 +173,28 @@ export default function MagnumChip3D({ onReady, onError }: MagnumChip3DProps = {
 
   return (
     <ChipSceneErrorBoundary onError={onError}>
+      {/* Keep the live GLB visible after the first frame; demand rendering caused it to flash out. */}
       <Canvas
         dpr={[1, maxDpr]}
-        frameloop="demand"
+        frameloop="always"
         camera={{ fov: 32, position: [0, 0.03, 4.15] }}
-        gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+        gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true, powerPreference: "high-performance" }}
         onCreated={({ gl }) => {
           gl.setClearColor(0x000000, 0);
+          gl.outputColorSpace = THREE.SRGBColorSpace;
+          gl.toneMapping = THREE.ACESFilmicToneMapping;
+          gl.toneMappingExposure = 1.25;
         }}
         style={{ width: "100%", height: "100%", background: "transparent", cursor: "pointer" }}
       >
-        <ambientLight intensity={0.2} color="#F1EFE9" />
-        <directionalLight position={[-3.5, 3.2, 4.8]} intensity={1.75} color="#FFF2DF" />
-        <directionalLight position={[3, 0.6, 3.8]} intensity={0.32} color="#F1EFE9" />
-        <pointLight position={[1.8, 1.6, 2.5]} intensity={0.52} color="#C4A36A" />
-        <Environment preset="studio" environmentIntensity={0.16} />
+        <ambientLight intensity={0.55} color="#FFF5E7" />
+        <hemisphereLight args={["#FFF9F2", "#4B0715", 0.75]} />
+        <directionalLight position={[-3.5, 3.2, 4.8]} intensity={2.4} color="#FFF2DF" />
+        <directionalLight position={[3, 0.6, 3.8]} intensity={0.7} color="#F1EFE9" />
+        <pointLight position={[1.8, 1.6, 2.5]} intensity={0.85} color="#D9AA54" />
         <Suspense fallback={null}>
           <ChipModel onReady={onReady} />
         </Suspense>
-        <ContactShadows position={[0, -1.05, 0]} opacity={0.22} scale={3.2} blur={3.4} far={1.8} color="#08090B" />
       </Canvas>
     </ChipSceneErrorBoundary>
   );

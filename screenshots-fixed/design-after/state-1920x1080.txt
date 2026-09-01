@@ -1,0 +1,1 @@
+{'canvasCount': 0, 'canvasSize': None, 'fallbackOpacity': None, 'fallbackLoaded': None}

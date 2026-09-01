@@ -48,14 +48,14 @@ describe("PASS 2 visual system contract", () => {
     expect(hero).toContain("chipPositionRef");
     expect(hero).toContain("MagnumChip3D");
     expect(hero).toContain("ssr: false");
-    expect(hero).toContain("/magnum-chip.svg");
-    expect(hero).toContain("chip3DReady");
-    expect(hero).toContain("chip3DError");
+    expect(hero).not.toContain("/magnum-chip.svg");
+    expect(hero).not.toContain("chip3DReady");
+    expect(hero).not.toContain("chip3DError");
     expect(hero).not.toContain("rotateY: -540");
     expect(hero).not.toContain("chipSpinRef");
   });
 
-  it("integrates the licensed 3D MAGNUM Hero chip with a safe SVG fallback", () => {
+  it("integrates the licensed live 3D MAGNUM Hero chip without material overrides", () => {
     const chipPath = resolve(process.cwd(), "components/hero/MagnumChip3D.tsx");
     const creditsPath = resolve(process.cwd(), "public/THIRD_PARTY_ASSETS.md");
 
@@ -82,25 +82,41 @@ describe("PASS 2 visual system contract", () => {
     expect(chip).toContain("new THREE.Box3()");
     expect(chip).toContain("getCenter");
     expect(chip).toContain("ChipSceneErrorBoundary");
-    expect(chip).not.toContain("rotation={[Math.PI / 2, 0, 0]}");
     expect(chip).toContain('dispose={null}');
-    expect(chip).not.toContain("isAnimatingRef");
+    expect(chip).toContain("isAnimatingRef");
     expect(chip).toContain("object.castShadow = true");
     expect(chip).not.toContain("object.material = new THREE.MeshStandardMaterial");
     expect(chip).toContain("hasPaintedRef");
-    expect(chip).not.toContain("FLIP_DURATION");
-    expect(chip).not.toContain("Math.PI * 2");
-    expect(chip).not.toContain("onPointerMove");
-    expect(chip).not.toContain("onClick");
+    expect(chip).toContain("FLIP_DURATION = 1.2");
+    expect(chip).toContain("Math.PI * 2 * eased");
+    expect(chip).not.toContain("Math.PI * 2.6");
+
     expect(chip).toContain("<Suspense fallback={null}>");
     expect(chip).toContain("onCreated");
     expect(hero).toContain("MagnumChip3D");
-    expect(hero).toContain("<MagnumChip3D");
-    expect(hero).toContain("chip3DReady");
-    expect(hero).toContain("chip3DError");
-    expect(hero).toContain("ChipSvgFallback");
+    expect(hero).toContain("<MagnumChip3D />");
+    expect(hero).not.toContain("chip3DReady");
+    expect(hero).not.toContain("chip3DError");
+    expect(hero).not.toContain("ChipSvgFallback");
     expect(credits).toContain("Casino Poker Chip");
     expect(credits).toContain("CC BY 4.0");
+  });
+  it("renders a visible MAGNUM 3D chip continuously from the first client frame", () => {
+    const hero = projectFile("components/sections/Hero.tsx");
+    const chip = projectFile("components/hero/MagnumChip3D.tsx");
+
+    expect(hero).toContain("<MagnumChip3D />");
+    expect(hero).not.toContain("chip3DError");
+    expect(chip).toContain('frameloop="demand"');
+  });
+  it("keeps an immediately visible hero chip rendered from the GLB model", () => {
+    const hero = projectFile("components/sections/Hero.tsx");
+
+    expect(existsSync(resolve(process.cwd(), "public/chips/magnum-chip-frames/frame-00.png"))).toBe(true);
+    expect(hero).toContain("HeroChipRender");
+    expect(hero).toContain("<HeroChipRender />");
+    expect(hero).toContain("/chips/magnum-chip-frames/frame-00.png");
+    expect(hero).not.toContain("/magnum-chip.svg");
   });
   it("keeps the original pinned About video treatment", () => {
     const about = projectFile("components/sections/About.tsx");

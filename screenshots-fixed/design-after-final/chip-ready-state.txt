@@ -1,0 +1,1 @@
+{'status': 200, 'canvas': 1, 'opacity': '0', 'errors': []}
