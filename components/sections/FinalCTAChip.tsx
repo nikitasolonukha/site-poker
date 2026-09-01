@@ -78,7 +78,7 @@ const chipPresets: ChipPreset[] = [
     id: "chip-4",
     src: "/chips/magnum-chip-cta-tight.webp",
     left: "4.5%",
-    top: "76%",
+    top: "80%",
     width: "58%",
     baseRotation: 0,
     idleX: -7,
