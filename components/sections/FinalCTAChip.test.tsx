@@ -55,6 +55,8 @@ describe("Final CTA chip motion", () => {
     expect(finalCTA).toContain("overflow-hidden");
     expect(finalCTA).not.toContain("overflow-visible");
     expect(finalCTA).not.toContain("absolute inset-0 overflow-hidden pointer-events-none");
+    expect(finalCTA).toContain("final-cta-foreground");
+    expect(finalCTA).toContain("h-[10px] bg-[#08080A] z-40");
     expect(finalCTA).toContain("md:top-[clamp(24px,4vw,56px)]");
     expect(finalCTA).toContain("md:left-[calc(50%-339px)]");
     expect(finalCTA).toContain("lg:left-[calc(50%-54px)]");
