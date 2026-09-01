@@ -144,8 +144,8 @@ describe("PASS 2 visual system contract", () => {
     expect(why).toContain("md:sticky");
     expect(why).toContain("md:top-[calc(var(--stack-top)+var(--index)*var(--peek))]");
     expect(why).toContain('"--stack-top": "112px"');
-    expect(why).toContain('"--peek": "14px"');
-    expect(why).toContain("why-stack-reading-space hidden md:block md:h-[82svh]");
+    expect(why).toContain('"--peek": "18px"');
+    expect(why).toContain("why-stack-reading-space hidden md:block md:h-[90svh]");
     expect(why).toContain("why-stack-end-space hidden h-[36svh] md:block");
     expect(why).not.toContain("gsap");
     expect(why).not.toContain("ScrollTrigger");
