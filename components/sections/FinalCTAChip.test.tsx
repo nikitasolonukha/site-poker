@@ -27,7 +27,7 @@ describe("Final CTA chip motion", () => {
     expect(source).toContain('left: "32%"');
     expect(source).toContain('top: "54.5%"');
     expect(source).toContain('left: "4.5%"');
-    expect(source).toContain('top: "76%"');
+    expect(source).toContain('top: "80%"');
     expect(source).toContain('width: "58%"');
     expect(source).not.toContain("clipPath");
     expect(source).toContain("cycleDuration: 8.8");
@@ -52,6 +52,8 @@ describe("Final CTA chip motion", () => {
     expect(finalCTA).toContain("<FinalCTAChip />");
     expect(finalCTA).not.toContain("final-cta-cards");
     expect(finalCTA).toContain("min-h-[100svh]");
+    expect(finalCTA).toContain("overflow-visible");
+    expect(finalCTA).toContain("absolute inset-0 overflow-hidden pointer-events-none");
     expect(finalCTA).toContain("md:top-[clamp(24px,4vw,56px)]");
     expect(finalCTA).toContain("md:left-[calc(50%-339px)]");
     expect(finalCTA).toContain("lg:left-[calc(50%-54px)]");
