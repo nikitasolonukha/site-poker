@@ -22,10 +22,11 @@ describe("Final CTA chip motion", () => {
     expect(source).toContain("preset.left");
     expect(source).toContain("preset.top");
     expect(source).toContain("preset.width");
-    expect(source).toContain('top: "2%"');
+    expect(source).toContain('top: "5%"');
     expect(source).toContain('left: "53%"');
+    expect(source).toContain('top: "39%"');
     expect(source).toContain('left: "32%"');
-    expect(source).toContain('top: "54.5%"');
+    expect(source).toContain('top: "62%"');
     expect(source).toContain('left: "4.5%"');
     expect(source).toContain('top: "86%"');
     expect(source).toContain('width: "58%"');
