@@ -55,6 +55,7 @@ describe("Final CTA chip motion", () => {
     expect(finalCTA).toContain("md:top-[clamp(24px,4vw,56px)]");
     expect(finalCTA).toContain("md:left-[calc(50%-339px)]");
     expect(finalCTA).toContain("lg:left-[calc(50%-54px)]");
+    expect(finalCTA).toContain("xl:left-[calc(50%+106px)]");
     expect(finalCTA).toContain("md:h-[780px]");
     expect(finalCTA).not.toContain("md:bottom-[-250px]");
     const styles = readFileSync(resolve(process.cwd(), "app/globals.css"), "utf8");
