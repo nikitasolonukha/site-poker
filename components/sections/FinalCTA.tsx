@@ -39,6 +39,9 @@ export default function FinalCTA() {
       <div className="final-cta-chip absolute left-1/2 top-[4vw] w-[80vw] aspect-square -translate-x-1/2 pointer-events-none z-30 md:left-[calc(50%-339px)] md:right-auto lg:left-[calc(50%-54px)] xl:left-[calc(50%+106px)] md:top-[clamp(24px,4vw,56px)] md:h-[780px] md:w-[600px] md:translate-x-0 md:aspect-auto">
         <FinalCTAChip />
       </div>
-    </section>
+      <div
+        aria-hidden="true"
+        className="final-cta-foreground pointer-events-none absolute inset-x-0 bottom-0 h-[10px] bg-[#08080A] z-40"
+      />    </section>
   );
 }
