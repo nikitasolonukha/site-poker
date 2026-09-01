@@ -22,7 +22,12 @@ describe("Final CTA chip motion", () => {
     expect(source).toContain("preset.left");
     expect(source).toContain("preset.top");
     expect(source).toContain("preset.width");
-    expect(source).toContain('top: "82%"');
+    expect(source).toContain('top: "2%"');
+    expect(source).toContain('left: "53%"');
+    expect(source).toContain('left: "32%"');
+    expect(source).toContain('top: "54.5%"');
+    expect(source).toContain('left: "4.5%"');
+    expect(source).toContain('top: "76%"');
     expect(source).toContain('width: "58%"');
     expect(source).not.toContain("clipPath");
     expect(source).toContain("cycleDuration: 8.8");
@@ -48,7 +53,8 @@ describe("Final CTA chip motion", () => {
     expect(finalCTA).not.toContain("final-cta-cards");
     expect(finalCTA).toContain("min-h-[100svh]");
     expect(finalCTA).toContain("md:top-[clamp(24px,4vw,56px)]");
-    expect(finalCTA).toContain("md:right-[19%]");
+    expect(finalCTA).toContain("md:left-[calc(50%-339px)]");
+    expect(finalCTA).toContain("md:h-[780px]");
     expect(finalCTA).not.toContain("md:bottom-[-250px]");
     const styles = readFileSync(resolve(process.cwd(), "app/globals.css"), "utf8");
     expect(styles).not.toContain("final-chip-float");
