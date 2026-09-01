@@ -15,7 +15,7 @@ export default function WhyMagnum() {
           "radial-gradient(circle at 72% 25%, rgba(125, 11, 41, 0.22), transparent 38%), linear-gradient(180deg, #08090B 0%, #13070A 48%, #21060C 100%)",
       }}
     >
-      <div className="relative z-10 mx-auto w-[92vw] max-w-[1600px] pb-12 pt-24 md:w-[82vw]">
+      <div className="relative z-10 mx-auto w-[92vw] max-w-[1600px] pb-16 pt-24 md:w-[82vw]">
         <h2
           id="why-title"
           className="font-display font-bold uppercase text-[#F1EFE9] text-balance"
@@ -26,8 +26,8 @@ export default function WhyMagnum() {
       </div>
 
       <div
-        className="why-stack relative z-10 mx-auto w-[92vw] max-w-[1180px] space-y-6 pb-6 md:w-[calc(100vw-96px)] md:space-y-0 md:pb-0"
-        style={{ "--stack-top": "112px", "--peek": "14px" } as CSSProperties}
+        className="why-stack relative z-10 mx-auto w-[92vw] max-w-[1180px] space-y-6 pb-8 md:w-[calc(100vw-96px)] md:space-y-0 md:pb-0"
+        style={{ "--stack-top": "112px", "--peek": "18px" } as CSSProperties}
       >
         {whyFeatures.map((feature, index) => (
           <Fragment key={feature.id}>
@@ -38,7 +38,7 @@ export default function WhyMagnum() {
             <div
               className={[
                 cardSurfaceClasses[index] ?? cardSurfaceClasses[0],
-                "flex min-h-[62svh] w-full flex-col gap-8 rounded-[2px] border border-[rgba(241,239,233,0.10)] p-6 md:h-full md:min-h-0 md:flex-row md:gap-12 md:p-10",
+                "flex min-h-[62svh] w-full flex-col gap-10 rounded-[2px] border border-[rgba(241,239,233,0.08)] p-7 md:h-full md:min-h-0 md:flex-row md:gap-16 md:p-12",
               ].join(" ")}
             >
               <div className="order-2 flex w-full flex-col justify-between md:order-1 md:w-[42%]">
@@ -68,7 +68,7 @@ export default function WhyMagnum() {
               <div className="relative order-1 aspect-[4/3] w-full overflow-hidden rounded-[2px] border border-[rgba(241,239,233,0.07)] bg-[#08090B] md:order-2 md:aspect-auto md:w-[58%]">
                 {feature.media === null ? (
                   <div
-                    className="absolute inset-0 flex flex-col justify-between p-6 md:p-8"
+                    className="absolute inset-0 flex flex-col justify-between p-7 md:p-10"
                     style={{
                       background:
                         "radial-gradient(circle at 65% 35%, rgba(125,11,41,.26), transparent 42%), #0D090B",
@@ -114,7 +114,7 @@ export default function WhyMagnum() {
             {index < whyFeatures.length - 1 && (
               <div
                 aria-hidden="true"
-                className="why-stack-reading-space hidden md:block md:h-[82svh]"
+                className="why-stack-reading-space hidden md:block md:h-[90svh]"
               />
             )}
           </Fragment>

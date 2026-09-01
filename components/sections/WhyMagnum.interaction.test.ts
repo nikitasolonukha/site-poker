@@ -16,9 +16,9 @@ describe("Why Magnum sticky stack", () => {
       "md:top-[calc(var(--stack-top)+var(--index)*var(--peek))]",
     );
     expect(why).toContain('"--stack-top": "112px"');
-    expect(why).toContain('"--peek": "14px"');
+    expect(why).toContain('"--peek": "18px"');
     expect(why).toContain('style={{ "--index": index, zIndex: 10 + index * 10 } as CSSProperties}');
-    expect(why).toContain("why-stack-reading-space hidden md:block md:h-[82svh]");
+    expect(why).toContain("why-stack-reading-space hidden md:block md:h-[90svh]");
     expect(why).toContain("why-stack-end-space hidden h-[36svh] md:block");
   });
 
