@@ -36,7 +36,7 @@ export default function FinalCTA() {
         </div>
       </div>
       {/* Four independently animated chips */}
-      <div className="final-cta-chip absolute left-1/2 top-[4vw] w-[80vw] aspect-square -translate-x-1/2 pointer-events-none z-30 md:left-[calc(50%-339px)] md:right-auto md:top-[clamp(24px,4vw,56px)] md:h-[780px] md:w-[600px] md:translate-x-0 md:aspect-auto">
+      <div className="final-cta-chip absolute left-1/2 top-[4vw] w-[80vw] aspect-square -translate-x-1/2 pointer-events-none z-30 md:left-[calc(50%-339px)] md:right-auto lg:left-[calc(50%-54px)] xl:left-[calc(50%+106px)] md:top-[clamp(24px,4vw,56px)] md:h-[780px] md:w-[600px] md:translate-x-0 md:aspect-auto">
         <FinalCTAChip />
       </div>
     </section>
