@@ -4,7 +4,7 @@ import FinalCTAChip from "./FinalCTAChip";
 
 export default function FinalCTA() {
   return (
-    <section className="relative bg-[#7D0B29] py-32 md:py-48 overflow-hidden text-[#F1EFE9]">
+    <section className="relative min-h-[100svh] bg-[#7D0B29] py-32 md:py-48 overflow-hidden text-[#F1EFE9]">
       {/* Abstract Background Element */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] md:w-[100vw] aspect-square opacity-[0.12] pointer-events-none mix-blend-overlay">
         <Image
@@ -36,7 +36,7 @@ export default function FinalCTA() {
         </div>
       </div>
       {/* Four independently animated chips */}
-      <div className="final-cta-chip absolute left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-[15%] bottom-[-20vw] md:bottom-[-250px] w-[80vw] md:w-[600px] aspect-square pointer-events-none z-30">
+      <div className="final-cta-chip absolute left-1/2 top-[4vw] w-[80vw] aspect-square -translate-x-1/2 pointer-events-none z-30 md:left-[calc(50%-339px)] md:right-auto md:top-[clamp(24px,4vw,56px)] md:h-[780px] md:w-[600px] md:translate-x-0 md:aspect-auto">
         <FinalCTAChip />
       </div>
     </section>
